@@ -2,6 +2,7 @@
 #include "Game.hpp"
 #include "TriangleObject.hpp"
 #include "RegularPolygonObject.hpp"
+#include "Map.hpp"
 
 SceneMain::SceneMain(Game &parent) :
 	Scene(parent), shaderExample(NULL),
@@ -34,7 +35,8 @@ bool SceneMain::init() {
 	sf::Mouse::setPosition(sf::Vector2i(SCRWIDTH/2,SCRHEIGHT/2),parent.getWindow());
 	//add a new triangle
     addObject(new       TriangleObject(this,shaderExample, vec3f( 1.0f, 0.0f,-3.0f), vec3f(1.0f)));
-    addObject(new RegularPolygonObject(this,shaderExample2,vec3f(-1.0f, 0.0f,-3.0f), vec3f(1.0f), 9));
+	addObject(new RegularPolygonObject(this,shaderExample2,vec3f(-1.0f, 0.0f,-3.0f), vec3f(1.0f), 9));
+	addObject(new Map(this));
 	std::cout << "* Init was succesful" << std::endl;
 	return true;
 }
@@ -65,7 +67,7 @@ void SceneMain::draw() const {
 	//calculate perspective matrix
 	getState().projection = glm::perspective(FOV,float(SCRWIDTH)/float(SCRHEIGHT),ZNEAR,ZFAR);
 	//Move matrix to position (according to player)
-	getState().view = mat4f(1.0);
+	getState().view = glm::translate(mat4f(1.0), vec3f(0.0, -1.0, 0.0));
 	//models
 	for(std::list<GameObject*>::const_iterator it = objects.begin();it != objects.end(); ++it)
 		(*it)->draw();
