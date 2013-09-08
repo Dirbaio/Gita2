@@ -3,7 +3,13 @@
 Map::Map(SceneMain* scene) : GameObject(scene)
 {
     int size = 30;
-    Map<
+    tiles = std::vector<std::vector<Tile> > (size, std::vector<Tile>(size));
+
+    for(int y = 0; y < size; y++)
+        for(int x = 0; x < size; x++)
+        {
+            tiles[x][y].ty
+        }
 }
 
 Map::~Map()
