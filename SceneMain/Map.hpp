@@ -31,7 +31,8 @@ class Map : public GameObject
 		int getWidth() const {return tiles.size();}
 		int getHeight() const {return tiles[0].size();}
 
-		Tile getTile(int x, int y) const;
+		Tile tile(int x, int y) const;
+		Tile& tile(int x, int y);
 
 	private:
 		std::vector<std::vector<Tile> > tiles;
