@@ -7,7 +7,7 @@ GameObject::GameObject(SceneMain* scene, const vec3f &pos, const vec3f &scale) :
 }
 
 GameObject::GameObject(SceneMain* scene) :
-    isAlive(true), parentScene(scene) {
+	isAlive(true), pos(0.0), scale(1.0), parentScene(scene) {
 }
 
 GameObject::~GameObject() {
