@@ -2,7 +2,7 @@
 #define MAP_H
 
 #include "GameObject.hpp"
-
+#include "graphics/Model.hpp"
 class Map : public GameObject
 {
 	public:
@@ -22,10 +22,6 @@ class Map : public GameObject
 				}
 		};
 
-	private:
-		std::vector<std::vector<Tile> > tiles;
-
-	public:
 		Map(SceneMain* scene);
 		virtual ~Map();
 
@@ -36,6 +32,10 @@ class Map : public GameObject
 		int getHeight() const {return tiles[0].size();}
 
 		Tile getTile(int x, int y) const;
+
+	private:
+		std::vector<std::vector<Tile> > tiles;
+		Model model;
 };
 
 

@@ -51,7 +51,7 @@ HEADERS += \
     graphics/Uniform.hpp \
     graphics/ShaderBinding.hpp \
     SceneMain/RegularPolygonObject.hpp \
-    SceneMain/Map.h
+    SceneMain/Map.hpp
 
 OTHER_FILES += \
     $$PWD/shaders/sample.vert \
