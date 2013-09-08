@@ -8,7 +8,6 @@ SOURCES += \
     $$PWD/Game.cpp \
     $$PWD/tools.cpp \
     $$PWD/Scene.cpp \
-    $$PWD/RenderState.cpp \
     $$PWD/graphics/Texture.cpp \
     $$PWD/graphics/TextureManager.cpp \
     $$PWD/graphics/Shader.cpp \
