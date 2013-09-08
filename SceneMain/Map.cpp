@@ -3,11 +3,18 @@
 #include "Game.hpp"
 #include <cmath>
 
+using namespace std;
+
+
 int randInt(int min, int max)
 {
 	return min+rand()%(max-min+1);
 }
 
+bool randBool(int prob)
+{
+	return randInt(0, 99) < prob;
+}
 
 struct Street
 {
@@ -16,6 +23,12 @@ struct Street
 		int roadway;
 		//width = sidewalk*2+roadway;
 		//roadway = 0 => calle peatonal :D
+
+		int start() { return pos; }
+		int end() { return pos+sidewalk*2+roadway; }
+		int sstart() { return pos+sidewalk; }
+		int send() { return pos+sidewalk+roadway; }
+		bool peatonal() { return roadway == 0; }
 };
 
 const int streetTypes[][2] = {
@@ -24,9 +37,9 @@ const int streetTypes[][2] = {
 	{1, 3},
 	{2, 4},
 };
-std::vector<Street> generateStreets(int size)
+vector<Street> generateStreets(int size)
 {
-	std::vector<Street> v;
+	vector<Street> v;
 
 	for(int i = 1; i < size; i++)
 	{
@@ -44,14 +57,18 @@ std::vector<Street> generateStreets(int size)
 	return v;
 }
 
+struct Apple {
+		bool x, y;
+};
+
 Map::Map(SceneMain* scene) : GameObject(scene)
 {
 	int sizex = 180;
 	int sizey = 120;
-	tiles = std::vector<std::vector<Tile> > (sizex, std::vector<Tile>(sizey));
+	tiles = vector<vector<Tile> > (sizex, vector<Tile>(sizey));
 
-	std::vector<Street> sx = generateStreets(sizey);
-	std::vector<Street> sy = generateStreets(sizex);
+	vector<Street> sx = generateStreets(sizey);
+	vector<Street> sy = generateStreets(sizex);
 
 	//Generate the map
 	for(int y = 0; y < sizey; y++)
@@ -63,6 +80,73 @@ Map::Map(SceneMain* scene) : GameObject(scene)
 	int ymin = sx[0].pos;
 	int ymax = sx[sx.size()-1].pos+sx[sx.size()-1].sidewalk*2+sx[sx.size()-1].roadway;
 
+	vector<vector<Apple> > aa (sy.size(), vector<Apple>(sx.size()));
+	for(int x = 0; x < sy.size(); x++)
+		for(int y = 0; y < sx.size(); y++)
+		{
+			Apple& a = aa[x][y];
+			if(x == 0)
+				a.x = false;
+			else
+				a.x = randBool(80);
+			if(y == 0)
+				a.y = false;
+			else
+				a.y = randBool(80);
+		}
+
+	for(int x = 0; x < sy.size(); x++)
+		for(int y = 0; y < sx.size(); y++)
+		{
+			Apple& a = aa[x][y];
+			if(a.x)
+			{
+				int x1 = sy[x-1].start();
+				int x2 = sy[x].end();
+				int y1 = sx[y].start();
+				int y2 = sx[y].end();
+				for(int xx = x1; xx < x2; xx++)
+					for(int yy = y1; yy < y2; yy++)
+						tile(xx, yy).type = Map::Sidewalk;
+			}
+			if(a.y)
+			{
+				int y1 = sx[y-1].start();
+				int y2 = sx[y].end();
+				int x1 = sy[x].start();
+				int x2 = sy[x].end();
+				for(int xx = x1; xx < x2; xx++)
+					for(int yy = y1; yy < y2; yy++)
+						tile(xx, yy).type = Map::Sidewalk;
+			}
+		}
+
+	for(int x = 0; x < sy.size(); x++)
+		for(int y = 0; y < sx.size(); y++)
+		{
+			Apple& a = aa[x][y];
+			if(a.x)
+			{
+				int x1 = sy[x-1].sstart();
+				int x2 = sy[x].send();
+				int y1 = sx[y].sstart();
+				int y2 = sx[y].send();
+				for(int xx = x1; xx < x2; xx++)
+					for(int yy = y1; yy < y2; yy++)
+						tile(xx, yy).type = Map::Roadway;
+			}
+			if(a.y)
+			{
+				int y1 = sx[y-1].sstart();
+				int y2 = sx[y].send();
+				int x1 = sy[x].sstart();
+				int x2 = sy[x].send();
+				for(int xx = x1; xx < x2; xx++)
+					for(int yy = y1; yy < y2; yy++)
+						tile(xx, yy).type = Map::Roadway;
+			}
+		}
+/*
 	for(int i = 0; i < sx.size(); i++)
 	{
 		Street& s = sx[i];
@@ -78,12 +162,12 @@ Map::Map(SceneMain* scene) : GameObject(scene)
 		for(int x = ymin; x < ymax; x++)
 			for(int y = 0; y < width; y++)
 				tile(s.pos+y, x).type = Map::Sidewalk;
-	}
+	}*/
 
 	srand(time(0));
 
 	//Generate the mesh
-	std::vector<Vertex::Element> elements;
+	vector<Vertex::Element> elements;
 	elements.push_back(Vertex::Element(Vertex::Attribute::Position , Vertex::Element::Float, 3));
 	elements.push_back(Vertex::Element(Vertex::Attribute::Color    , Vertex::Element::Float, 3));
 
@@ -94,16 +178,18 @@ Map::Map(SceneMain* scene) : GameObject(scene)
 			Vertex(vec3f pos, vec3f color) : pos(pos) , color(color) {}
 			vec3f pos,color;
 	};
-	std::vector<Vertex> data;
+	vector<Vertex> data;
 	for(int y = 0; y < sizey; y++)
 		for(int x = 0; x < sizex; x++)
 		{
-			vec3f color = vec3f(1.0, 1.0, 1.0);
+			vec3f color = vec3f(0.3, 0.5, 0.1);
 			if((x+y)%2 == 0)
-				color = vec3f(0.0, 1.0, 1.0);
+				color = vec3f(0.2, 0.4, 0.1);
 
 			if(tiles[x][y].type == Map::Sidewalk)
-				color = vec3f(0.5, 0.5, 1.0);
+				color = vec3f(0.4, 0.4, 0.5);
+			if(tiles[x][y].type == Map::Roadway)
+				color = vec3f(0.2, 0.3, 0.3);
 
 			data.push_back(Vertex(vec3f(x, 0,  y), color));
 			data.push_back(Vertex(vec3f(x, 0,  y+1), color));
