@@ -67,7 +67,7 @@ void SceneMain::draw() const {
 	//calculate perspective matrix
 	getState().projection = glm::perspective(FOV,float(SCRWIDTH)/float(SCRHEIGHT),ZNEAR,ZFAR);
 	//Move matrix to position (according to player)
-	getState().view = glm::translate(mat4f(1.0), vec3f(0.0, -1.0, 0.0));
+	getState().view = glm::lookAt(vec3f(10, 10, 10), vec3f(0, 0, 0), vec3f(0, 1, 0));
 	//models
 	for(std::list<GameObject*>::const_iterator it = objects.begin();it != objects.end(); ++it)
 		(*it)->draw();
