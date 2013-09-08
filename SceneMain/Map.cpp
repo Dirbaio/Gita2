@@ -8,7 +8,7 @@ Map::Map(SceneMain* scene) : GameObject(scene)
     for(int y = 0; y < size; y++)
         for(int x = 0; x < size; x++)
         {
-            tiles[x][y].ty
+            tiles[x][y].type = Map::Garden;
         }
 }
 
