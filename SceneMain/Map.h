@@ -5,37 +5,37 @@
 
 class Map : public GameObject
 {
-public:
-    enum TileType {
-        Roadway,
-        Sidewalk,
-        Crosswalk,
-        Garden,
-        House,
-        Fence
-    };
+	public:
+		enum TileType {
+			Roadway,
+			Sidewalk,
+			Crosswalk,
+			Garden,
+			House,
+			Fence
+		};
 
-    struct Tile {
-        TileType type;
-        bool isSolid() const {
-			return (type == House || type == Fence);
-        }
-    };
+		struct Tile {
+				TileType type;
+				bool isSolid() const {
+					return (type == House || type == Fence);
+				}
+		};
 
-private:
-    std::vector<std::vector<Tile> > tiles;
+	private:
+		std::vector<std::vector<Tile> > tiles;
 
-public:
-    Map(SceneMain* scene);
-    virtual ~Map();
+	public:
+		Map(SceneMain* scene);
+		virtual ~Map();
 
-    virtual void update(float deltaTime);
-    virtual void draw() const;
+		virtual void update(float deltaTime);
+		virtual void draw() const;
 
-    int getWidth() const {return tiles.size();}
-    int getHeight() const {return tiles[0].size();}
+		int getWidth() const {return tiles.size();}
+		int getHeight() const {return tiles[0].size();}
 
-    Tile getTile(int x, int y) const;
+		Tile getTile(int x, int y) const;
 };
 
 
