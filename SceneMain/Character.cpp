@@ -10,6 +10,7 @@ Character::Character(SceneMain* sc) : GameObject(sc)
 {
     vel = 2.50f;
     position = vec2f(3, 3);
+	faceDir = FACE_DOWN;
 
     std::vector<Vertex::Element> elements;
     elements.push_back(Vertex::Element(Vertex::Attribute::Position , Vertex::Element::Float, 3));

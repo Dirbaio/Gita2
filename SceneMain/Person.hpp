@@ -35,6 +35,8 @@ class Person : public Npc {
 	vector<vec2f> lastSawPlayer;
 	vector<float> playerActionTime;
 
+	float velMult;
+
 	float dissappearTime;
 	float deathTimer;
 	float panicTime, startPanicTime;

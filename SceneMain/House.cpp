@@ -3,7 +3,7 @@
 #include "../Game.hpp"
 
 House::House(SceneMain* parentScene, ShaderProgram *program, vec3f pos, vec3f scale) : GameObject(parentScene,pos,scale) {
-	tri.mesh = new Mesh("models/house.obj");
+	tri.mesh = new Mesh("data/models/house.obj");
 	tri.program = program;
 }
 

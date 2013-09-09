@@ -15,12 +15,12 @@ AnimationData* s_person_data[NUANIMS_DATA] = {
 };
 
 const char* s_person_dataFilenames[NUANIMS_DATA] = {
-	"anim/calvo.anim",
-	"anim/tupe.anim",
-	"anim/gordo.anim",
-	"anim/rubiaca.anim",
-	"anim/morenaca.anim",
-	"anim/moderno.anim"
+	"data/anim/calvo.anim",
+	"data/anim/tupe.anim",
+	"data/anim/gordo.anim",
+	"data/anim/rubiaca.anim",
+	"data/anim/morenaca.anim",
+	"data/anim/moderno.anim"
 };
 
 Person::Person(SceneMain* sc) : Npc(sc) {
@@ -48,9 +48,11 @@ Person::Person(SceneMain* sc) : Npc(sc) {
 	//dieSound.setPitch(1.5f);
 	//dieSound.setVolume(10000.0f);
 
-	vel = 16.0f * 1.25f * (float) Utils::randomInt(750, 2000) / 1000.0f;
+	velMult = Utils::randomFloat(0.7, 1.5);
 	ix = Utils::randomInt(8, 56);
 	iy = Utils::randomInt(8, 56);
+
+	position = vec2f(sc->map->getRandomStreet())+0.5f;
 }
 
 
@@ -128,7 +130,7 @@ vec2f Person::moveCharacter(float delta) {
 		case STATE_WALKING:
 		{
 			mark = MARK_NONE;
-
+			vel = 2.0*velMult;
 			if(!hasGoal)
 				setGoal(vec2f(scene->map->getRandomStreet()));
 
@@ -176,6 +178,7 @@ vec2f Person::moveCharacter(float delta) {
 		}
 		case STATE_PANIC:
 		{
+			vel = 3.5*velMult;
 			if (panicTime > 0) panicTime -= delta;
 			else {
 				state = STATE_WALKING;
@@ -223,8 +226,8 @@ vec2f Person::moveCharacter(float delta) {
 		}
 		case STATE_CONFUSED: {
 			mark = MARK_BLUE_QUESTION;
+			vel = 1.0*velMult;
 
-			vel = 20.0f;
 			confusedTime -= delta;
 			confusedTimeFacing -= delta;
 

@@ -55,6 +55,10 @@ bool SceneMain::init() {
 	addObject(map = new Map(this));
 	addObject(new House(this,this->shaderHouse,vec3f(9,0,9),vec3f(2.5)));
 
+	for(int i = 0; i < 500; i++)
+	{
+		addObject(new Person(this));
+	}
 	std::cout << "* Init was succesful" << std::endl;
 	return true;
 }
