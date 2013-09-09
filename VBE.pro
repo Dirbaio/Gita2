@@ -28,7 +28,9 @@ SOURCES += \
     SceneMain/Map.cpp \
     SceneMain/Player.cpp \
     SceneMain/Character.cpp \
-    SceneMain/InputEngine.cpp
+    SceneMain/InputEngine.cpp \
+    SceneMain/Npc.cpp \
+    SceneMain/Person.cpp
 
 HEADERS += \
     $$PWD/Scene.hpp \
@@ -56,7 +58,9 @@ HEADERS += \
     SceneMain/Map.hpp \
     SceneMain/Player.hpp \
     SceneMain/Character.hpp \
-    SceneMain/InputEngine.hpp
+    SceneMain/InputEngine.hpp \
+    SceneMain/Npc.hpp \
+    SceneMain/Person.hpp
 
 OTHER_FILES += \
     $$PWD/shaders/sample.vert \
