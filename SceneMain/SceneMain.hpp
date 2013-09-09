@@ -26,6 +26,7 @@ class SceneMain : public Scene {
 
 		ShaderProgram* shaderExample; //I have not done a shader manager yet :/
         ShaderProgram* shaderExample2;
+		ShaderProgram* shaderHouse;
 
         Map* map;
 	private:

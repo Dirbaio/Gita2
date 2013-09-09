@@ -4,6 +4,7 @@
 #include "RegularPolygonObject.hpp"
 #include "Map.hpp"
 #include "Player.hpp"
+#include "House.hpp"
 
 SceneMain::SceneMain(Game &parent) :
 	Scene(parent), shaderExample(NULL),
@@ -24,6 +25,11 @@ bool SceneMain::loadResources() {
     if(!s2->makeProgram("shaders/sample2.vert","shaders/sample2.frag"))
         return false;
     shaderExample2 = s2;
+
+	ShaderProgram* s3 = new ShaderProgram();
+	if(!s3->makeProgram("shaders/house.vert","shaders/house.frag"))
+		return false;
+	shaderHouse = s3;
 
 	return true;
 }
@@ -46,6 +52,7 @@ bool SceneMain::init() {
     playerNum = 0;
 
     addObject(map = new Map(this));
+	addObject(new House(this,this->shaderHouse,vec3f(0,0,0),vec3f(1.0)));
 
     std::cout << "* Init was succesful" << std::endl;
 	return true;

@@ -28,7 +28,8 @@ SOURCES += \
     SceneMain/Map.cpp \
     SceneMain/Player.cpp \
     SceneMain/Character.cpp \
-    SceneMain/InputEngine.cpp
+    SceneMain/InputEngine.cpp \
+    SceneMain/House.cpp
 
 HEADERS += \
     $$PWD/Scene.hpp \
@@ -56,10 +57,13 @@ HEADERS += \
     SceneMain/Map.hpp \
     SceneMain/Player.hpp \
     SceneMain/Character.hpp \
-    SceneMain/InputEngine.hpp
+    SceneMain/InputEngine.hpp \
+    SceneMain/House.hpp
 
 OTHER_FILES += \
     $$PWD/shaders/sample.vert \
     $$PWD/shaders/sample.frag \
     shaders/sample2.vert \
-    shaders/sample2.frag
+    shaders/sample2.frag \
+    shaders/house.frag \
+    shaders/house.vert
