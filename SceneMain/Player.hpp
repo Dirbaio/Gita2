@@ -1,22 +1,17 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-#include "character.h"
-#include "item.h"
-#include <set>
-
-#include <input_engine.h>
+#include "Character.hpp"
+#include "InputEngine.hpp"
 
 class Player : public Character {
 public:
-    Player(GameScene* sc) : Character(sc) {}
 
-	void Init();
-	void Update();
+    Player(SceneMain* sc);
 
-    void LoadAnims();
+    virtual vec2f moveCharacter(float deltaTime);
     void hitAction();
-
+    void ensureAnim(string s) {}
     void gotCaught();
 
     int getMoney(){return myMoney;}
@@ -25,30 +20,19 @@ public:
     int getKills() {return myKills;}
     void setKills(int k) {myKills = k;}
 
-    bool isDoingAction() { return m_actionDelay > 0; }
-
-    void onBuy(Item item);
-
-    const std::set<int>& getSpecialItems() {return m_specialItems;}
+    bool isDoingAction() { return actionDelay > 0; }
 
     InputEng playerInput;
 
-    bool m_jailed;
-
-	sf::Sprite mySpr;
-	sf::Vector2f myVel;
+    bool jailed;
 
     std::string currentAnim;
-	float m_actionDelay;
+    float actionDelay;
 
     int myMoney;
     int myKills;
 
-    std::set<int> m_specialItems;
-
-    sf::Sprite m_jailSpr;
-
-    float m_jailedTime;
+    float jailedTime;
 };
 
 #endif // PLAYER_H

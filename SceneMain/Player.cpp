@@ -1,134 +1,35 @@
-#include "player.h"
-#include "graphics_engine.h"
-#include "input_engine.h"
-#include "animation.h"
-#include "utils.h"
-#include "game_scene.h"
+#include "Player.hpp"
 
-AnimationData* s_animData = NULL;
 
-void Player::Init() {
+Player::Player(SceneMain* sc) : Character(sc)
+{
+    pos.x = 0;
+    pos.y = 0;
 
-    GraphEng* graphics = GraphEng::getInstance();
-
-    m_jailSpr.setTexture(*graphics->getTexture("img/jail.png"));
-    m_jailSpr.setOrigin((float) m_jailSpr.getTextureRect().width *0.5f,
-                        (float) m_jailSpr.getTextureRect().height*0.5f);
-
-    mySpr.setTexture(*graphics->getTexture("img/player.png"));
-
-    m_position.x = 0;
-    m_position.y = 0;
-
-    myVel.x = 64*1.25;
-    myVel.y = 64*1.25;
-
-    m_boundbox.height = 16;
-    m_boundbox.width = 16;
-
-    LoadAnims();
-    ensureAnim("IdleDown");
-    m_actionDelay = 0;
+    actionDelay = 0;
 
     myMoney = 0;
     myKills = 0;
 
-    m_jailed = false;
-}
-
-void Player::LoadAnims() {
-
-    if (s_animData == NULL) {
-        s_animData = new AnimationData();
-        s_animData->Load("anim/takena.anim");
-    }
-
-    m_anim = new Animation();
-    m_anim->setAnimData(s_animData);
-
-    //mySpr.setOrigin(animations.getCurrentFrame()->getLocalBounds().width*0.5,
-    // animations.getCurrentFrame()->getLocalBounds().height*0.5);
+    jailed = false;
 }
 
 void Player::hitAction()
 {
-    m_actionDelay = 0.18f;
+    actionDelay = 0.18f;
 }
 
-void Player::onBuy(Item item) {
-    if (item.getItemType() == ITEM_SHOE &&
-            (m_specialItems.find(ITEM_SHOE) == m_specialItems.end())) {
-        myVel.x*= 1.5f;
-        myVel.y*= 1.5f;
-        m_specialItems.insert(ITEM_SHOE);
-    }
+vec2f Player::moveCharacter(float delta) {
 
-    myMoney -= item.getValue();
-
-}
-
-void Player::Update() {
-    updateBBox();
-
-    float delta = playerInput.getFrameTime().asSeconds();
-
-    if(m_jailed)
+    if(jailed)
     {
-        m_jailedTime += delta;
-        return;
+        jailedTime += delta;
+        return vec2f(0, 0);
     }
 
-    if (m_actionDelay < 0)
-    {
-        const sf::Vector2f &pos0 = m_position;
-        sf::Vector2f posf = m_position;
+    playerInput.Update();
 
-        bool hasMoved = false;
-
-        if (playerInput.getKeyState(InputEng::PLAYER_UP) && !playerInput.getKeyState(InputEng::PLAYER_DOWN)) {
-            posf.y -= myVel.y*delta;
-            ensureAnim("WalkingUp");
-            m_faceDir = FACE_UP;
-            hasMoved = true;
-        }
-        if (playerInput.getKeyState(InputEng::PLAYER_DOWN) && !playerInput.getKeyState(InputEng::PLAYER_UP)) {
-            posf.y += myVel.y*delta;
-            ensureAnim("WalkingDown");
-            m_faceDir = FACE_DOWN;
-            hasMoved = true;
-        }
-        if (playerInput.getKeyState(InputEng::PLAYER_LEFT) && !playerInput.getKeyState(InputEng::PLAYER_RIGHT)) {
-            posf.x -= myVel.x*delta;
-            if(!hasMoved) ensureAnim("WalkingLeft");
-            m_faceDir = FACE_LEFT;
-            hasMoved = true;
-        }
-        if (playerInput.getKeyState(InputEng::PLAYER_RIGHT) && !playerInput.getKeyState(InputEng::PLAYER_LEFT)) {
-            posf.x += myVel.x*delta;
-            if(!hasMoved) ensureAnim("WalkingRight");
-            m_faceDir = FACE_RIGHT;
-            hasMoved = true;
-        }
-
-        if (!hasMoved) {
-            if (m_faceDir == FACE_UP)  ensureAnim("IdleUp");
-            if (m_faceDir == FACE_DOWN)  ensureAnim("IdleDown");
-            if (m_faceDir == FACE_LEFT)  ensureAnim("IdleLeft");
-            if (m_faceDir == FACE_RIGHT)  ensureAnim("IdleRight");
-        }
-
-        Character::move(posf);
-    }
-    else
-    {
-        m_actionDelay -= delta;
-
-        if (m_faceDir == FACE_UP)    ensureAnim("AttackUp");
-        if (m_faceDir == FACE_DOWN)  ensureAnim("AttackDown");
-        if (m_faceDir == FACE_LEFT)  ensureAnim("AttackLeft");
-        if (m_faceDir == FACE_RIGHT) ensureAnim("AttackRight");
-    }
-
+    /*
     if (playerInput.getKeyDown(InputEng::PLAYER_ACTION)) {
 
         hitAction();
@@ -141,10 +42,11 @@ void Player::Update() {
             for (int i = 0; i < n_moneys; ++i) scene->spawnNewMoney((*it)->getPosition());
         }
     }
+    */
 
+//    anim->Update(delta);
 
-    m_anim->Update(delta);
-
+    /*
     for (std::list<Item>::iterator it = scene->itemList.begin(); it != scene->itemList.end(); ++it) {
         if (it->isTakeable()) {
 
@@ -159,12 +61,39 @@ void Player::Update() {
                 myMoney += it->getValue();
             }
         }
+    }*/
+
+    if (actionDelay <= 0)
+    {
+        vec2f dir (0, 0);
+
+        if (playerInput.getKeyState(InputEng::PLAYER_UP) && !playerInput.getKeyState(InputEng::PLAYER_DOWN))
+            dir.y = -1;
+        if (playerInput.getKeyState(InputEng::PLAYER_DOWN) && !playerInput.getKeyState(InputEng::PLAYER_UP))
+            dir.y = 1;
+        if (playerInput.getKeyState(InputEng::PLAYER_LEFT) && !playerInput.getKeyState(InputEng::PLAYER_RIGHT))
+            dir.x = -1;
+        if (playerInput.getKeyState(InputEng::PLAYER_RIGHT) && !playerInput.getKeyState(InputEng::PLAYER_LEFT))
+            dir.x = 1;
+
+        return dir*vel*delta;
+    }
+    else
+    {
+        actionDelay -= delta;
+
+        if (faceDir == FACE_UP)    ensureAnim("AttackUp");
+        if (faceDir == FACE_DOWN)  ensureAnim("AttackDown");
+        if (faceDir == FACE_LEFT)  ensureAnim("AttackLeft");
+        if (faceDir == FACE_RIGHT) ensureAnim("AttackRight");
+
+        return vec2f(0, 0);
     }
 }
 
 void Player::gotCaught() {
-    if(m_jailed) return;
+    if(jailed) return;
 
-    m_jailed = true;
-    m_jailedTime = 0;
+    jailed = true;
+    jailedTime = 0;
 }

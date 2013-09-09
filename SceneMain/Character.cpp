@@ -1,12 +1,62 @@
 #include "Character.hpp"
 #include <cassert>
 #include "SceneMain.hpp"
+#include "graphics/Vertex.hpp"
+#include "graphics/Model.hpp"
+#include "graphics/Mesh.hpp"
+#include "../Game.hpp"
 
 Character::Character(SceneMain* sc) : GameObject(sc)
 {
     hasGoal = false;
     mark = MARK_NONE;
-    vel = 16.0f;
+    vel = 2.50f;
+    position = vec2f(10, 10);
+    std::vector<Vertex::Element> elements;
+    elements.push_back(Vertex::Element(Vertex::Attribute::Position , Vertex::Element::Float, 3));
+    elements.push_back(Vertex::Element(Vertex::Attribute::Color    , Vertex::Element::Float, 3));
+
+    Vertex::Format format(elements);
+    Mesh* mesh = new Mesh(format,0,false);
+
+    struct Vertex {
+            Vertex(vec3f pos, vec3f color) : pos(pos) , color(color) {}
+            vec3f pos,color;
+    };
+    std::vector<Vertex> data;
+    data.push_back(Vertex(vec3f(-1.0, 0.0, -0.577), vec3f(0.0, 0.0, 1.0)));
+    data.push_back(Vertex(vec3f( 0.0, 0.0,  1.155), vec3f(1.0, 0.0, 0.0)));
+    data.push_back(Vertex(vec3f( 1.0, 0.0, -0.577), vec3f(0.0, 1.0, 0.0)));
+
+    mesh->setVertexData(&data[0],data.size());
+    model.mesh = mesh;
+    model.program = scene->shaderExample;
+}
+
+void Character::draw() const
+{
+    mat4f m(1.0);
+    vec3f pos2 = pos;
+    pos2.y = 1;
+    m = glm::translate(m, pos2);
+    //m = glm::rotate(m,GLOBALCLOCK.getElapsedTime().asSeconds()*50,vec3f(0,0,1));
+    //m = glm::scale(m,scale);
+
+    mat4f transform = scene->getState().projection*scene->getState().view*m;
+    model.program->uniform("modelViewProjectionMatrix")->set(transform);
+    model.draw();
+}
+
+void Character::update(float deltaTime)
+{
+    vec2f dir = moveCharacter(deltaTime);
+    moveInDir(dir, deltaTime);
+    pos = vec3f(position.x, 0, position.y);
+}
+
+vec2f Character::moveCharacter(float deltaTime)
+{
+    return dirTowardsGoal();
 }
 
 void Character::move(vec2f posf)
@@ -116,7 +166,7 @@ void Character::setGoal(vec2f goal) {
     }
 
     //Calculate the path!
-    vector<vector<int> > vis(TILESIZE, vector<int>(TILESIZE, -1));
+    vector<vector<int> > vis(scene->map->getWidth(), vector<int>(scene->map->getHeight(), -1));
 
     int dx[] = {0, 0, 1, -1};
     int dy[] = {1, -1, 0, 0};
@@ -135,8 +185,8 @@ void Character::setGoal(vec2f goal) {
         {
             int x2 = x + dx[i];
             int y2 = y + dy[i];
-            if(x2 < 0 || x2 >= TILESIZE) continue;
-            if(y2 < 0 || y2 >= TILESIZE) continue;
+            if(x2 < 0 || x2 >= scene->map->getWidth()) continue;
+            if(y2 < 0 || y2 >= scene->map->getHeight()) continue;
             if(scene->map->solid(x2, y2)) continue;
             if(vis[x2][y2] != -1) continue;
             vis[x2][y2] = i;
@@ -170,7 +220,8 @@ void Character::setGoal(vec2f goal) {
     vec2f antf(16, 16);
     for(int i = 0; i < v.size(); i++)
     {
-        vec2f p (v[i].x*64+Utils::randomInt(8, 56), v[i].y*64+Utils::randomInt(8, 56));
+
+        vec2f p (v[i].x + 0.5, v[i].y + 0.5);
         if(v[i].x == ant.x)
             p.x = antf.x;
         if(v[i].y == ant.y)
@@ -182,9 +233,9 @@ void Character::setGoal(vec2f goal) {
     path.push(goal);
 }
 
-void Character::moveTowardsGoal()
+vec2f Character::dirTowardsGoal()
 {
-    if(!hasGoal) return;
+    if(!hasGoal) return vec2f(0, 0);
 
     while(!path.empty() && glm::distance(path.front(), position) < 2)
         path.pop();
@@ -192,14 +243,21 @@ void Character::moveTowardsGoal()
     if(path.empty())
     {
         hasGoal = false;
-        return;
+        return vec2f(0, 0);
     }
 
     vec2f to = path.front();
-    moveInDir(to-position);
+    return to-position;
 }
 
-void Character::moveInDir(vec2f dir)
+static vec2i dirInc[] = {
+    vec2i(0,-1),
+    vec2i(0, 1),
+    vec2i(-1,0),
+    vec2i( 1,0)
+};
+
+void Character::moveInDir(vec2f dir, float deltaTime)
 {
     if (glm::length(dir) == 0) return;
     dir = glm::normalize(dir);
@@ -209,19 +267,17 @@ void Character::moveInDir(vec2f dir)
     if(dir.x >  0.5f) faceDir = FACE_RIGHT;
     if(dir.y >  0.5f) faceDir = FACE_DOWN;
 
-    float delta = scene->input.getFrameTime().asSeconds();
-    move(position + dir*delta*vel);
+    move(position + dir*deltaTime*vel);
 }
 
 bool Character::canSee(const vec2f& pos)
 {
-
     vec2f dir_corpse = pos-position;
     vec2f dir_facing((float) dirInc[faceDir].x, (float) dirInc[faceDir].y);
     dir_corpse = glm::normalize(dir_corpse);
     dir_facing = glm::normalize(dir_facing);
 
-    return glm::dot(dir_corpse,dir_facing) >= 0.0f && scene->city.visible(position, pos);
+    return glm::dot(dir_corpse,dir_facing) >= 0.0f; // && scene->city.visible(position, pos);
 }
 
 

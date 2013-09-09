@@ -201,14 +201,13 @@ Map::Map(SceneMain* scene) : GameObject(scene)
 
 	mesh->setVertexData(&data[0],data.size());
 	model.mesh = mesh;
-	model.program = parentScene->shaderExample;
+    model.program = scene->shaderExample;
 }
 
 Map::~Map()
 {
 	delete model.mesh;
 }
-
 
 void Map::update(float deltaTime)
 {
@@ -217,7 +216,7 @@ void Map::update(float deltaTime)
 
 void Map::draw() const
 {
-	mat4f transform = parentScene->getState().projection*parentScene->getState().view;
+    mat4f transform = scene->getState().projection*scene->getState().view;
 	model.program->uniform("modelViewProjectionMatrix")->set(transform);
 	model.draw();
 }

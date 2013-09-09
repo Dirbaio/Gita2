@@ -1,9 +1,10 @@
 #ifndef SCENEMAIN_HPP
 #define SCENEMAIN_HPP
 #include "Scene.hpp"
-
+#include "Map.hpp"
 class GameObject;
 class ShaderProgram;
+class Player;
 class SceneMain : public Scene {
 	public:
 		//virtual overrides
@@ -30,6 +31,8 @@ class SceneMain : public Scene {
 	private:
 		bool loadResources();
 
+        std::vector<Player*> players;
+        int playerNum;
 		std::list<GameObject*> objects;
 		float debugCounter;
 		int fpsCount;

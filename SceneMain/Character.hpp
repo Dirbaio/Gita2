@@ -1,9 +1,9 @@
 #ifndef CHARACTER_H
 #define CHARACTER_H
 
-#include "object.h"
+#include "GameObject.hpp"
 #include <queue>
-#include "utils.h"
+#include "../graphics/Model.hpp"
 
 using namespace std;
 
@@ -15,14 +15,22 @@ enum CharacterMark {
     MARK_QUESTION
 };
 
+enum FaceDir {
+    FACE_UP = 0, FACE_DOWN, FACE_LEFT, FACE_RIGHT, FACE_SIZE
+};
+
 class Character : public GameObject
 {
 public:
     Character(SceneMain* sc);
     virtual ~Character() {}
 
-	void move(sf::Vector2f posf);
-    bool canSee(const sf::Vector2f& pos);
+    void move(vec2f posf);
+    bool canSee(const vec2f& pos);
+    void update(float deltaTime);
+    void draw() const;
+    virtual vec2f moveCharacter(float deltaTime);
+
 protected:
 
 
@@ -36,19 +44,22 @@ protected:
     virtual bool onUpCollision(int x, int j);
     virtual bool onDownCollision(int x, int j);
 
-	queue<sf::Vector2f> m_path;
-	sf::Vector2f m_goal;
-	bool m_hasGoal;
+    FaceDir faceDir;
+    vec2f position;
+    float vel;
 
-	float m_vel;
-    CharacterMark m_mark;
-    sf::Sprite spriteExc, spriteQuest, spriteRedExc, spriteBlueQuest;
+    queue<vec2f> path;
+    vec2f goal;
+    bool hasGoal;
 
-    void DrawMark();
+    CharacterMark mark;
+    void drawMark();
 
-	void setGoal(sf::Vector2f goal);
-	void moveTowardsGoal();
-    void moveInDir(sf::Vector2f dir);
+    void setGoal(vec2f goal);
+    vec2f dirTowardsGoal();
+    void moveInDir(vec2f dir, float deltaTime);
+
+    Model model;
 };
 
 #endif // CHARACTER_H

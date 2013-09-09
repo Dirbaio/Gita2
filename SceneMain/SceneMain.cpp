@@ -3,6 +3,7 @@
 #include "TriangleObject.hpp"
 #include "RegularPolygonObject.hpp"
 #include "Map.hpp"
+#include "Player.hpp"
 
 SceneMain::SceneMain(Game &parent) :
 	Scene(parent), shaderExample(NULL),
@@ -32,12 +33,21 @@ bool SceneMain::init() {
 	if (!loadResources())
 		return false;
 	//Center mouse
-	sf::Mouse::setPosition(sf::Vector2i(SCRWIDTH/2,SCRHEIGHT/2),parent.getWindow());
-	//add a new triangle
-	addObject(new       TriangleObject(this,shaderExample, vec3f( 3.0f, 0.0f,3.0f), vec3f(1.0f)));
-	addObject(new RegularPolygonObject(this,shaderExample2,vec3f(4.0f, 0.0f,6.0f), vec3f(1.0f), 9));
+    //sf::Mouse::setPosition(sf::Vector2i(SCRWIDTH/2,SCRHEIGHT/2),parent.getWindow());
+
+    int playerCount = 1;
+    players.resize(playerCount);
+    for(int i = 0; i < playerCount; i++)
+    {
+        players[i] = new Player(this);
+        addObject(players[i]);
+    }
+
+    playerNum = 0;
+
     addObject(map = new Map(this));
-	std::cout << "* Init was succesful" << std::endl;
+
+    std::cout << "* Init was succesful" << std::endl;
 	return true;
 }
 
@@ -67,7 +77,7 @@ void SceneMain::draw() const {
 	//calculate perspective matrix
 	getState().projection = glm::perspective(FOV,float(SCRWIDTH)/float(SCRHEIGHT),ZNEAR,ZFAR);
 	//Move matrix to position (according to player)
-	getState().view = glm::lookAt(vec3f(90, 120, 61), vec3f(90, 0, 60), vec3f(0, 1, 0));
+    getState().view = glm::lookAt(players[playerNum]->pos+vec3f(0, 10, 10), players[playerNum]->pos, vec3f(0, 1, 0));
 	//models
 	for(std::list<GameObject*>::const_iterator it = objects.begin();it != objects.end(); ++it)
 		(*it)->draw();
