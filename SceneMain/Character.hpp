@@ -4,16 +4,10 @@
 #include "GameObject.hpp"
 #include <queue>
 #include "../graphics/Model.hpp"
+#include "Animation.hpp"
 
 using namespace std;
 
-enum CharacterMark {
-    MARK_NONE,
-    MARK_EXCLAMATION,
-    MARK_RED_EXCLAMATION,
-    MARK_BLUE_QUESTION,
-    MARK_QUESTION
-};
 
 enum FaceDir {
     FACE_UP = 0, FACE_DOWN, FACE_LEFT, FACE_RIGHT, FACE_SIZE
@@ -44,19 +38,12 @@ protected:
     virtual bool onUpCollision(int x, int j);
     virtual bool onDownCollision(int x, int j);
 
+    Animation* anim;
+
     FaceDir faceDir;
     vec2f position;
     float vel;
 
-    queue<vec2f> path;
-    vec2f goal;
-    bool hasGoal;
-
-    CharacterMark mark;
-    void drawMark();
-
-    void setGoal(vec2f goal);
-    vec2f dirTowardsGoal();
     void moveInDir(vec2f dir, float deltaTime);
 
     Model model;

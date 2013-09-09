@@ -29,7 +29,12 @@ SOURCES += \
     SceneMain/Player.cpp \
     SceneMain/Character.cpp \
     SceneMain/InputEngine.cpp \
+<<<<<<< HEAD
     SceneMain/House.cpp
+=======
+    SceneMain/Npc.cpp \
+    SceneMain/Person.cpp
+>>>>>>> 2bab6b31f150050cab16a2b13bc4ead8eadc6bed
 
 HEADERS += \
     $$PWD/Scene.hpp \
@@ -58,7 +63,12 @@ HEADERS += \
     SceneMain/Player.hpp \
     SceneMain/Character.hpp \
     SceneMain/InputEngine.hpp \
+<<<<<<< HEAD
     SceneMain/House.hpp
+=======
+    SceneMain/Npc.hpp \
+    SceneMain/Person.hpp
+>>>>>>> 2bab6b31f150050cab16a2b13bc4ead8eadc6bed
 
 OTHER_FILES += \
     $$PWD/shaders/sample.vert \
