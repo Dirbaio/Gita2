@@ -24,12 +24,12 @@ Character::Character(SceneMain* sc) : GameObject(sc)
             vec3f pos,color;
     };
     std::vector<Vertex> data;
-	data.push_back(Vertex(vec3f(-0.5, 0.0, 0), vec3f(0.0, 0.0, 1.0)));
-	data.push_back(Vertex(vec3f( 0.5, 0.0, 0), vec3f(1.0, 0.0, 0.0)));
-	data.push_back(Vertex(vec3f(-0.5, 2.0, 0), vec3f(0.0, 1.0, 0.0)));
-	data.push_back(Vertex(vec3f( 0.5, 0.0, 0), vec3f(0.0, 0.0, 1.0)));
-	data.push_back(Vertex(vec3f( 0.5, 2.0, 0), vec3f(1.0, 0.0, 0.0)));
-	data.push_back(Vertex(vec3f(-0.5, 2.0, 0), vec3f(0.0, 1.0, 0.0)));
+	data.push_back(Vertex(vec3f(-0.3, 0.0, 0), vec3f(0.0, 0.0, 1.0)));
+	data.push_back(Vertex(vec3f( 0.3, 0.0, 0), vec3f(1.0, 0.0, 0.0)));
+	data.push_back(Vertex(vec3f(-0.3, 2.0, 0), vec3f(0.0, 1.0, 0.0)));
+	data.push_back(Vertex(vec3f( 0.3, 0.0, 0), vec3f(1.0, 0.0, 0.0)));
+	data.push_back(Vertex(vec3f( 0.3, 2.0, 0), vec3f(0.0, 0.0, 1.0)));
+	data.push_back(Vertex(vec3f(-0.3, 2.0, 0), vec3f(0.0, 1.0, 0.0)));
 
     mesh->setVertexData(&data[0],data.size());
     model.mesh = mesh;

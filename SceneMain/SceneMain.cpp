@@ -52,7 +52,7 @@ bool SceneMain::init() {
     playerNum = 0;
 
     addObject(map = new Map(this));
-	addObject(new House(this,this->shaderHouse,vec3f(0,0,0),vec3f(1.0)));
+	addObject(new House(this,this->shaderHouse,vec3f(9,0,9),vec3f(2.5)));
 
     std::cout << "* Init was succesful" << std::endl;
 	return true;

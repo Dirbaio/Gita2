@@ -52,7 +52,7 @@ vector<Street> generateStreets(int size)
 		if(i < size-1)
 			v.push_back(s);
 
-		i += randInt(16, 20);
+		i += randInt(5, 10);
 	}
 	return v;
 }
