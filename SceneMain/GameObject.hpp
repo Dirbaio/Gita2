@@ -16,7 +16,7 @@ class GameObject { //Static objects that have a position and rotation but don't 
 		vec3f pos;
 		vec3f scale;
 	protected:
-		SceneMain* parentScene;
+        SceneMain* scene;
 };
 
 #endif // GAMEOBJECT_HPP

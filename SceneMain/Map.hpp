@@ -34,6 +34,9 @@ class Map : public GameObject
 		Tile tile(int x, int y) const;
 		Tile& tile(int x, int y);
 
+        bool solid(int x, int y) const {return tile(x, y).isSolid(); }
+        bool solid(float x, float y) const {return solid(int(x), int(y)); }
+
 	private:
 		std::vector<std::vector<Tile> > tiles;
 		Model model;
