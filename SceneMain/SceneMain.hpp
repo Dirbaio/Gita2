@@ -28,10 +28,10 @@ class SceneMain : public Scene {
         ShaderProgram* shaderExample2;
 
         Map* map;
+        std::vector<Player*> players;
 	private:
 		bool loadResources();
 
-        std::vector<Player*> players;
         int playerNum;
 		std::list<GameObject*> objects;
 		float debugCounter;

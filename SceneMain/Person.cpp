@@ -1,6 +1,7 @@
 #include "Person.hpp"
 #include "Npc.hpp"
 #include "SceneMain.hpp"
+#include "Animation.hpp"
 
 #define NUANIMS_DATA 6
 AnimationData* s_person_data[NUANIMS_DATA] = {
@@ -25,27 +26,20 @@ Person::Person(SceneMain* sc) : Npc(sc) {
     dissappearTime = 30.0f;
     walkingTime = 0.0f;
 
-    life = 1;
     startPanicTime = 10.0f;
     state = STATE_WALKING;
 
-    knowsPlayer = vector<bool>(scene->players.size(), false);
+    knowsPlayers = vector<bool>(scene->players.size(), false);
     lastSawPlayer = vector<vec2f>(scene->players.size());
     playerActionTime = vector<float>(scene->players.size(), 10000);
 
-    transHit = NULL;
     confuseCooldown = 0.0f;
 
-    int rand = Utils::randomInt(0, NUANIMS_DATA-1);
+    int rand = 0; //Utils::randomInt(0, NUANIMS_DATA-1);
     if (s_person_data[rand] == NULL) {
         s_person_data[rand] = new AnimationData();
         s_person_data[rand]->Load(s_person_dataFilenames[rand]);
     }
-
-    AnimationData* ad = s_person_data[rand];
-    if (anim == NULL) anim = new Animation();
-    anim->setAnimData(ad);
-    anim->SelectAnim("WalkingDown");
 
     //dieSoundBuff.loadFromFile("audio/wilhelmscream.ogg");
     //dieSound.setBuffer(dieSoundBuff);

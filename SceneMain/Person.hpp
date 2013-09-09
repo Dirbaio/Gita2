@@ -8,7 +8,7 @@
 
 class Person : public Npc {
 public:
-    Person(SceneMain* sc) : Npc(sc) {}
+    Person(SceneMain* sc);
 
 	void Init();
     void Update();
