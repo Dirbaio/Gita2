@@ -111,16 +111,12 @@ vert_exit:
                 yb = int(pos0.y - rad+margin),
                 yt = int(pos0.y + rad-margin);
         for (int x = xo; x >= xn; x--)
-        {
             for (int y = yb; y <= yt; y++)
-            {
                 if (scene->map->solid(x,y) && onLeftCollision(x, y))
                 {
                     posf.x = int(x)+1 + rad;
                     goto horz_exit;
                 }
-            }
-        }
 
         noLeftCollision();
     }
@@ -131,16 +127,12 @@ vert_exit:
                 yb = int(pos0.y - rad+margin),
                 yt = int(pos0.y + rad-margin);
         for (int x = xo; x <= xn; x++)
-        {
             for (int y = yb; y <= yt; y++)
-            {
                 if (scene->map->solid(x,y) && onRightCollision(x, y))
                 {
                     posf.x = int(x) - rad;
                     goto horz_exit;
                 }
-            }
-        }
 
         noRightCollision();
     }
