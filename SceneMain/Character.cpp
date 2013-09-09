@@ -24,9 +24,12 @@ Character::Character(SceneMain* sc) : GameObject(sc)
             vec3f pos,color;
     };
     std::vector<Vertex> data;
-    data.push_back(Vertex(vec3f(-1.0, 0.0, -0.577), vec3f(0.0, 0.0, 1.0)));
-    data.push_back(Vertex(vec3f( 0.0, 0.0,  1.155), vec3f(1.0, 0.0, 0.0)));
-    data.push_back(Vertex(vec3f( 1.0, 0.0, -0.577), vec3f(0.0, 1.0, 0.0)));
+	data.push_back(Vertex(vec3f(-0.5, 0.0, 0), vec3f(0.0, 0.0, 1.0)));
+	data.push_back(Vertex(vec3f( 0.5, 0.0, 0), vec3f(1.0, 0.0, 0.0)));
+	data.push_back(Vertex(vec3f(-0.5, 2.0, 0), vec3f(0.0, 1.0, 0.0)));
+	data.push_back(Vertex(vec3f( 0.5, 0.0, 0), vec3f(0.0, 0.0, 1.0)));
+	data.push_back(Vertex(vec3f( 0.5, 2.0, 0), vec3f(1.0, 0.0, 0.0)));
+	data.push_back(Vertex(vec3f(-0.5, 2.0, 0), vec3f(0.0, 1.0, 0.0)));
 
     mesh->setVertexData(&data[0],data.size());
     model.mesh = mesh;
@@ -35,10 +38,8 @@ Character::Character(SceneMain* sc) : GameObject(sc)
 
 void Character::draw() const
 {
-    mat4f m(1.0);
-    vec3f pos2 = pos;
-    pos2.y = 1;
-    m = glm::translate(m, pos2);
+	mat4f m(1.0);
+	m = glm::translate(m, pos);
     //m = glm::rotate(m,GLOBALCLOCK.getElapsedTime().asSeconds()*50,vec3f(0,0,1));
     //m = glm::scale(m,scale);
 
