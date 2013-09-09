@@ -4,6 +4,7 @@
 #include "GameObject.hpp"
 #include <queue>
 #include "../graphics/Model.hpp"
+#include "Animation.hpp"
 
 using namespace std;
 
@@ -36,6 +37,8 @@ protected:
     virtual bool onRightCollision(int x, int j);
     virtual bool onUpCollision(int x, int j);
     virtual bool onDownCollision(int x, int j);
+
+    Animation* anim;
 
     FaceDir faceDir;
     vec2f position;
