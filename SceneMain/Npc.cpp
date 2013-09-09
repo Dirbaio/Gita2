@@ -95,7 +95,7 @@ vec2f Npc::dirTowardsGoal()
 {
     if(!hasGoal) return vec2f(0, 0);
 
-    while(!path.empty() && glm::distance(path.front(), position) < 2)
+	while(!path.empty() && glm::distance(path.front(), position) < 0.2)
         path.pop();
 
     if(path.empty())

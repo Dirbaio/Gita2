@@ -49,6 +49,9 @@ Person::Person(SceneMain* sc) : Npc(sc) {
 	//dieSound.setVolume(10000.0f);
 
 	velMult = Utils::randomFloat(0.7, 1.5);
+	if(Utils::randomBool(5))
+		velMult = 4;
+
 	ix = Utils::randomInt(8, 56);
 	iy = Utils::randomInt(8, 56);
 
