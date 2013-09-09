@@ -6,15 +6,6 @@
 using namespace std;
 
 
-int randInt(int min, int max)
-{
-	return min+rand()%(max-min+1);
-}
-
-bool randBool(int prob)
-{
-	return randInt(0, 99) < prob;
-}
 
 struct Street
 {
@@ -52,7 +43,7 @@ vector<Street> generateStreets(int size)
 		if(i < size-1)
 			v.push_back(s);
 
-		i += randInt(5, 10);
+		i += Utils::randomInt(5, 10);
 	}
 	return v;
 }
@@ -88,11 +79,11 @@ Map::Map(SceneMain* scene) : GameObject(scene)
 			if(x == 0)
 				a.x = false;
 			else
-				a.x = randBool(80);
+				a.x = Utils::randomBool(80);
 			if(y == 0)
 				a.y = false;
 			else
-				a.y = randBool(80);
+				a.y = Utils::randomBool(80);
 		}
 
 	for(int x = 0; x < sy.size(); x++)
@@ -146,7 +137,7 @@ Map::Map(SceneMain* scene) : GameObject(scene)
 						tile(xx, yy).type = Map::Roadway;
 			}
 		}
-/*
+	/*
 	for(int i = 0; i < sx.size(); i++)
 	{
 		Street& s = sx[i];
@@ -201,7 +192,7 @@ Map::Map(SceneMain* scene) : GameObject(scene)
 
 	mesh->setVertexData(&data[0],data.size());
 	model.mesh = mesh;
-    model.program = scene->shaderExample;
+	model.program = scene->shaderExample;
 }
 
 Map::~Map()
@@ -216,7 +207,7 @@ void Map::update(float deltaTime)
 
 void Map::draw() const
 {
-    mat4f transform = scene->getState().projection*scene->getState().view;
+	mat4f transform = scene->getState().projection*scene->getState().view;
 	model.program->uniform("modelViewProjectionMatrix")->set(transform);
 	model.draw();
 }
@@ -232,4 +223,17 @@ Map::Tile& Map::tile(int x, int y)
 {
 	assert(x >= 0 && x < getWidth() && y >= 0 && y < getHeight());
 	return tiles[x][y];
+}
+
+vec2i Map::getRandomStreet() const
+{
+	bool repeat = true;
+	int x, y;
+	while(repeat)
+	{
+		x = Utils::randomInt(0, getWidth()-1);
+		y = Utils::randomInt(0, getHeight()-1);
+		repeat = tile(x, y).isSolid();
+	}
+	return vec2i(x, y);
 }

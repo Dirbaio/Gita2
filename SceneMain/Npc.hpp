@@ -23,7 +23,6 @@ protected:
     void setGoal(vec2f goal);
     vec2f dirTowardsGoal();
 
-private:
     queue<vec2f> path;
     vec2f goal;
     bool hasGoal;

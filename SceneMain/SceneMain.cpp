@@ -5,6 +5,7 @@
 #include "Map.hpp"
 #include "Player.hpp"
 #include "House.hpp"
+#include "Person.hpp"
 
 SceneMain::SceneMain(Game &parent) :
 	Scene(parent), shaderExample(NULL),
@@ -17,17 +18,17 @@ SceneMain::~SceneMain() {
 bool SceneMain::loadResources() {
 	//shaders
 	ShaderProgram* s = new ShaderProgram();
-	if(!s->makeProgram("shaders/sample.vert","shaders/sample.frag"))
+	if(!s->makeProgram("data/shaders/sample.vert","data/shaders/sample.frag"))
 		return false;
 	shaderExample = s;
 
-    ShaderProgram* s2 = new ShaderProgram();
-    if(!s2->makeProgram("shaders/sample2.vert","shaders/sample2.frag"))
-        return false;
-    shaderExample2 = s2;
+	ShaderProgram* s2 = new ShaderProgram();
+	if(!s2->makeProgram("data/shaders/sample2.vert","data/shaders/sample2.frag"))
+		return false;
+	shaderExample2 = s2;
 
 	ShaderProgram* s3 = new ShaderProgram();
-	if(!s3->makeProgram("shaders/house.vert","shaders/house.frag"))
+	if(!s3->makeProgram("data/shaders/house.vert","data/shaders/house.frag"))
 		return false;
 	shaderHouse = s3;
 
@@ -39,22 +40,22 @@ bool SceneMain::init() {
 	if (!loadResources())
 		return false;
 	//Center mouse
-    //sf::Mouse::setPosition(sf::Vector2i(SCRWIDTH/2,SCRHEIGHT/2),parent.getWindow());
+	//sf::Mouse::setPosition(sf::Vector2i(SCRWIDTH/2,SCRHEIGHT/2),parent.getWindow());
 
-    int playerCount = 1;
-    players.resize(playerCount);
-    for(int i = 0; i < playerCount; i++)
-    {
-        players[i] = new Player(this);
-        addObject(players[i]);
-    }
+	int playerCount = 1;
+	players.resize(playerCount);
+	for(int i = 0; i < playerCount; i++)
+	{
+		players[i] = new Player(this);
+		addObject(players[i]);
+	}
 
-    playerNum = 0;
+	playerNum = 0;
 
-    addObject(map = new Map(this));
+	addObject(map = new Map(this));
 	addObject(new House(this,this->shaderHouse,vec3f(9,0,9),vec3f(2.5)));
 
-    std::cout << "* Init was succesful" << std::endl;
+	std::cout << "* Init was succesful" << std::endl;
 	return true;
 }
 
@@ -84,14 +85,14 @@ void SceneMain::draw() const {
 	//calculate perspective matrix
 	getState().projection = glm::perspective(FOV,float(SCRWIDTH)/float(SCRHEIGHT),ZNEAR,ZFAR);
 	//Move matrix to position (according to player)
-    getState().view = glm::lookAt(players[playerNum]->pos+vec3f(0, 10, 10), players[playerNum]->pos, vec3f(0, 1, 0));
+	getState().view = glm::lookAt(players[playerNum]->pos+vec3f(0, 10, 10), players[playerNum]->pos, vec3f(0, 1, 0));
 	//models
 	for(std::list<GameObject*>::const_iterator it = objects.begin();it != objects.end(); ++it)
 		(*it)->draw();
 }
 
 void SceneMain::onKeyPressed(float deltaTime, sf::Keyboard::Key key) {
-    (void) deltaTime; //unused parameter
+	(void) deltaTime; //unused parameter
 
 	switch(key) {
 		case sf::Keyboard::Escape:
@@ -103,7 +104,7 @@ void SceneMain::onKeyPressed(float deltaTime, sf::Keyboard::Key key) {
 }
 
 void SceneMain::onKeyDown(float deltaTime, sf::Keyboard::Key key) {
-    (void) deltaTime; //unused parameter
+	(void) deltaTime; //unused parameter
 
 	switch(key) {
 		default:
@@ -112,7 +113,7 @@ void SceneMain::onKeyDown(float deltaTime, sf::Keyboard::Key key) {
 }
 
 void SceneMain::onKeyReleased(float deltaTime, sf::Keyboard::Key key) {
-    (void) deltaTime; //unused parameter
+	(void) deltaTime; //unused parameter
 
 	switch(key) {
 		default:
@@ -121,7 +122,7 @@ void SceneMain::onKeyReleased(float deltaTime, sf::Keyboard::Key key) {
 }
 
 void SceneMain::onMouseButtonPressed(float deltaTime, sf::Mouse::Button button) {
-    (void) deltaTime; //unused parameter
+	(void) deltaTime; //unused parameter
 
 	switch(button) {
 		default:
@@ -130,7 +131,7 @@ void SceneMain::onMouseButtonPressed(float deltaTime, sf::Mouse::Button button) 
 }
 
 void SceneMain::onMouseButtonDown(float deltaTime, sf::Mouse::Button button) {
-    (void) deltaTime; //unused parameter
+	(void) deltaTime; //unused parameter
 
 	switch(button) {
 		default:
@@ -139,7 +140,7 @@ void SceneMain::onMouseButtonDown(float deltaTime, sf::Mouse::Button button) {
 }
 
 void SceneMain::onMouseButtonReleased(float deltaTime, sf::Mouse::Button button) {
-    (void) deltaTime; //unused parameter
+	(void) deltaTime; //unused parameter
 
 	switch(button) {
 		default:
@@ -148,9 +149,9 @@ void SceneMain::onMouseButtonReleased(float deltaTime, sf::Mouse::Button button)
 }
 
 void SceneMain::onMouseMoved(float deltaTime, int dx, int dy) {
-    (void) deltaTime; //unused parameter
-    (void) dx; //unused parameter
-    (void) dy; //unused parameter
+	(void) deltaTime; //unused parameter
+	(void) dx; //unused parameter
+	(void) dy; //unused parameter
 }
 
 void SceneMain::onClose() {
@@ -165,3 +166,43 @@ void SceneMain::addObject(GameObject* object) {
 	objects.push_back(object);
 }
 
+std::vector<Person*> SceneMain::getPeopleAround(vec2f pos, float r, SceneMain::SearchType st)
+{
+	std::vector<Person*> res;
+
+	for(std::list<GameObject*>::iterator it = objects.begin(); it != objects.end(); ++it)
+	{
+		Person* p = dynamic_cast<Person*> (*it);
+		if(p)
+		{
+			if( (st == SEARCH_ANY ||
+				 (st == SEARCH_DEAD && !p->is_alive()) ||
+				 (st == SEARCH_PANIC && p->getState() == Person::STATE_PANIC))
+					&& glm::distance(pos, p->getPosition()) <= r)
+				res.push_back(p);
+		}
+	}
+
+	return res;
+}
+
+std::vector<Person*> SceneMain::getPeopleSeen(Character* c, SceneMain::SearchType st)
+{
+
+	std::vector<Person*> res;
+
+	for(std::list<GameObject*>::iterator it = objects.begin(); it != objects.end(); ++it)
+	{
+		Person* p = dynamic_cast<Person*> (*it);
+		if(p)
+		{
+			if( (st == SEARCH_ANY ||
+				 (st == SEARCH_DEAD && !p->is_alive()) ||
+				 (st == SEARCH_PANIC && p->getState() == Person::STATE_PANIC))
+					&& c->canSee(p->getPosition()))
+				res.push_back(p);
+		}
+	}
+
+	return res;
+}

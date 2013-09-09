@@ -35,6 +35,11 @@ Character::Character(SceneMain* sc) : GameObject(sc)
     model.program = scene->shaderExample;
 }
 
+void Character::ensureAnim(std::string name)
+{
+
+}
+
 void Character::draw() const
 {
 	mat4f m(1.0);

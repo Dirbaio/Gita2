@@ -6,64 +6,65 @@
 #include <map>
 #include <set>
 #include <SFML/Graphics.hpp>
+#include "tools.hpp"
 
 struct AnimationFrame {
-    sf::Sprite spr;
-    float time; //Seconds
+		vec4i rect;
+		float time; //Seconds
 };
 
 struct AnimationTrack {
-    short numOfLoops; //0 = Infinite
-    std::string spritesheetFilename;
-    std::vector<AnimationFrame> frames;
+		short numOfLoops; //0 = Infinite
+		std::string spritesheetFilename;
+		std::vector<AnimationFrame> frames;
 };
 
 class AnimationData {
-public:
-    std::vector<AnimationTrack> animations;
-    std::map<std::string, int> animNames; //Name -> Vector pos
+	public:
+		std::vector<AnimationTrack> animations;
+		std::map<std::string, int> animNames; //Name -> Vector pos
 
-        bool Load(std::string filename);
-    bool Save(const char* filename);
+		bool Load(std::string filename);
+		bool Save(const char* filename);
 
-    std::set<std::string> getContentFilename();
-    void getContentFilename(std::set<std::string>& contentFilename);
+		std::set<std::string> getContentFilename();
+		void getContentFilename(std::set<std::string>& contentFilename);
 
-private:
-    bool ReadANIM (
-        std::string& currentAnimName,
-        AnimationTrack*& currentAnimTrack,
-        std::string& line, int lineNum);
+	private:
+		bool ReadANIM (
+				std::string& currentAnimName,
+				AnimationTrack*& currentAnimTrack,
+				std::string& line, int lineNum);
 
-    bool ReadFRAME (
-        AnimationTrack*& currentAnimTrack,
-        std::string& line, int lineNum);
+		bool ReadFRAME (
+				AnimationTrack*& currentAnimTrack,
+				std::string& line, int lineNum);
 };
 
 class Animation
 {
-public:
-    Animation();
-    Animation(AnimationData *data);
+	public:
+		Animation();
+		Animation(AnimationData *data);
 
-    virtual void Update(float GameTime);
+		virtual void Update(float GameTime);
 
-    int getAnimID(std::string name);
-    int getLoopsLeft();
-    bool setAnimData(AnimationData* data);
-    bool SelectAnim(std::string name);
-    bool SelectAnim(int animID);
+		int getAnimID(std::string name);
+		int getLoopsLeft();
+		bool setAnimData(AnimationData* data);
+		bool SelectAnim(std::string name);
+		bool SelectAnim(int animID);
 
-    sf::Sprite* getCurrentFrame();
+		vec4i getCurrentFrame();
 
-private:
-    AnimationData* data;
-    int animSelected;
-    int loopsLeft;
-    int frameSelected;
-    float frameTimeLeft;
+	private:
+		AnimationData* data;
+		int animSelected;
+		int loopsLeft;
+		int frameSelected;
+		float frameTimeLeft;
 
-    void NextFrame();
+		void NextFrame();
 };
 
 #endif // ANIMATION_H

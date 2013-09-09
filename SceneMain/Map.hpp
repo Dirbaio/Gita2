@@ -37,6 +37,7 @@ class Map : public GameObject
         bool solid(int x, int y) const {return tile(x, y).isSolid(); }
         bool solid(float x, float y) const {return solid(int(x), int(y)); }
 
+		vec2i getRandomStreet() const;
 	private:
 		std::vector<std::vector<Tile> > tiles;
 		Model model;

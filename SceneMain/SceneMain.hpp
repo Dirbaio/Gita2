@@ -2,41 +2,56 @@
 #define SCENEMAIN_HPP
 #include "Scene.hpp"
 #include "Map.hpp"
+
 class GameObject;
 class ShaderProgram;
 class Player;
+class Person;
+class Character;
+
 class SceneMain : public Scene {
-	public:
-		//virtual overrides
-		SceneMain(Game &parent);
-		~SceneMain();
-		bool init();
-		void update(float deltaTime);
-		void draw() const;
-		void onKeyPressed(float deltaTime, sf::Keyboard::Key key);
-		void onKeyDown(float deltaTime, sf::Keyboard::Key key);
-		void onKeyReleased(float deltaTime, sf::Keyboard::Key key);
-		void onMouseButtonPressed(float deltaTime, sf::Mouse::Button button);
-		void onMouseButtonDown(float deltaTime, sf::Mouse::Button button);
-		void onMouseButtonReleased(float deltaTime, sf::Mouse::Button button);
-		void onMouseMoved(float deltaTime, int dx, int dy);
-		void onClose(); //close scene-wide stuff
+    public:
 
-		void addObject(GameObject* object);
+	enum SearchType {
+	    SEARCH_ANY,
+	    SEARCH_DEAD,
+	    SEARCH_PANIC
+	};
 
-		ShaderProgram* shaderExample; //I have not done a shader manager yet :/
-        ShaderProgram* shaderExample2;
-		ShaderProgram* shaderHouse;
 
-        Map* map;
-        std::vector<Player*> players;
-	private:
-		bool loadResources();
+	//virtual overrides
+	SceneMain(Game &parent);
+	~SceneMain();
+	bool init();
+	void update(float deltaTime);
+	void draw() const;
+	void onKeyPressed(float deltaTime, sf::Keyboard::Key key);
+	void onKeyDown(float deltaTime, sf::Keyboard::Key key);
+	void onKeyReleased(float deltaTime, sf::Keyboard::Key key);
+	void onMouseButtonPressed(float deltaTime, sf::Mouse::Button button);
+	void onMouseButtonDown(float deltaTime, sf::Mouse::Button button);
+	void onMouseButtonReleased(float deltaTime, sf::Mouse::Button button);
+	void onMouseMoved(float deltaTime, int dx, int dy);
+	void onClose(); //close scene-wide stuff
 
-        int playerNum;
-		std::list<GameObject*> objects;
-		float debugCounter;
-		int fpsCount;
+	void addObject(GameObject* object);
+
+	ShaderProgram* shaderExample; //I have not done a shader manager yet :/
+	ShaderProgram* shaderExample2;
+	ShaderProgram* shaderHouse;
+
+	Map* map;
+	std::vector<Player*> players;
+
+	std::vector<Person*> getPeopleAround(vec2f pos, float r, SearchType st);
+	std::vector<Person*> getPeopleSeen(Character* c, SearchType st);
+    private:
+	bool loadResources();
+
+	int playerNum;
+	std::list<GameObject*> objects;
+	float debugCounter;
+	int fpsCount;
 };
 
 #endif // SCENEMAIN_HPP

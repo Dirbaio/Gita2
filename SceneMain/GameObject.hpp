@@ -1,6 +1,7 @@
 #ifndef GAMEOBJECT_HPP
 #define GAMEOBJECT_HPP
 #include "tools.hpp"
+#include "Utils.hpp"
 
 class SceneMain;
 class GameObject { //Static objects that have a position and rotation but don't move

@@ -7,11 +7,10 @@
 #include <list>
 
 class Person : public Npc {
-public:
-    Person(SceneMain* sc);
+	public:
+	Person(SceneMain* sc);
 
-	void Init();
-    void Update();
+	virtual vec2f moveCharacter(float deltaTime);
 
 	void doDeath();
 	void onHit();
@@ -24,31 +23,31 @@ public:
 		STATE_CONFUSED
 	};
 
-    int getState() { return state; }
-    bool knowsPlayer(int i);
+	int getState() { return state; }
+	bool knowsPlayer(int i);
 
-private:
-    float getClosestMenace(vec2f pos, vec2f& menacePos);
+	private:
+	float getClosestMenace(vec2f pos, vec2f& menacePos);
 	void lookAtRandomPlace();
 
 	int ix, iy;
-    vector<bool> knowsPlayers;
-    vector<vec2f> lastSawPlayer;
-    vector<float> playerActionTime;
+	vector<bool> knowsPlayers;
+	vector<vec2f> lastSawPlayer;
+	vector<float> playerActionTime;
 
-    float dissappearTime;
-    float deathTimer;
-    float panicTime, startPanicTime;
-    vec2f panicSource;
-    float walkingTime;
-    float confuseCooldown;
-    float confusedTime;
-    float confusedTimeFacing;
+	float dissappearTime;
+	float deathTimer;
+	float panicTime, startPanicTime;
+	vec2f panicSource;
+	float walkingTime;
+	float confuseCooldown;
+	float confusedTime;
+	float confusedTimeFacing;
 
-    State state;
+	State state;
 
-    //sf::SoundBuffer dieSoundBuff;
-    //sf::Sound dieSound;
+	//sf::SoundBuffer dieSoundBuff;
+	//sf::Sound dieSound;
 };
 
 #endif // PERSON_H
