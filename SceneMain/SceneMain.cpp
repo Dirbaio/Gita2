@@ -36,7 +36,7 @@ bool SceneMain::init() {
 	//add a new triangle
 	addObject(new       TriangleObject(this,shaderExample, vec3f( 3.0f, 0.0f,3.0f), vec3f(1.0f)));
 	addObject(new RegularPolygonObject(this,shaderExample2,vec3f(4.0f, 0.0f,6.0f), vec3f(1.0f), 9));
-	addObject(new Map(this));
+    addObject(map = new Map(this));
 	std::cout << "* Init was succesful" << std::endl;
 	return true;
 }

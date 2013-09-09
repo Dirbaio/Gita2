@@ -1,0 +1,52 @@
+#ifndef CHARACTER_H
+#define CHARACTER_H
+
+#include "GameObject.hpp"
+#include <queue>
+
+using namespace std;
+
+enum CharacterMark {
+    MARK_NONE,
+    MARK_EXCLAMATION,
+    MARK_RED_EXCLAMATION,
+    MARK_BLUE_QUESTION,
+    MARK_QUESTION
+};
+
+class Character : public GameObject
+{
+public:
+    Character(SceneMain* sc);
+    virtual ~Character() {}
+
+	void move(vec2f posf);
+    bool canSee(const vec2f& pos);
+protected:
+
+
+	virtual void noLeftCollision() {}
+	virtual void noRightCollision(){}
+	virtual void noUpCollision()   {}
+	virtual void noDownCollision() {}
+
+    virtual bool onLeftCollision(int x, int j);
+    virtual bool onRightCollision(int x, int j);
+    virtual bool onUpCollision(int x, int j);
+    virtual bool onDownCollision(int x, int j);
+
+	queue<vec2f> path;
+	vec2f m_goal;
+	bool hasGoal;
+    
+	float vel;
+    CharacterMark mark;
+
+    void DrawMark();
+
+	void setGoal(vec2f goal);
+	void moveTowardsGoal();
+    void moveInDir(vec2f dir);
+};
+
+#endif // CHARACTER_H

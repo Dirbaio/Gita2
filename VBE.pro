@@ -25,7 +25,12 @@ SOURCES += \
     graphics/Uniform.cpp \
     graphics/ShaderBinding.cpp \
     SceneMain/RegularPolygonObject.cpp \
-    SceneMain/Map.cpp
+    SceneMain/Map.cpp \
+    SceneMain/Police.cpp \
+    SceneMain/Player.cpp \
+    SceneMain/Person.cpp \
+    SceneMain/Npc.cpp \
+    SceneMain/Character.cpp
 
 HEADERS += \
     $$PWD/Scene.hpp \
@@ -50,7 +55,12 @@ HEADERS += \
     graphics/Uniform.hpp \
     graphics/ShaderBinding.hpp \
     SceneMain/RegularPolygonObject.hpp \
-    SceneMain/Map.hpp
+    SceneMain/Map.hpp \
+    SceneMain/Police.hpp \
+    SceneMain/Player.hpp \
+    SceneMain/Person.hpp \
+    SceneMain/Npc.hpp \
+    SceneMain/Character.hpp
 
 OTHER_FILES += \
     $$PWD/shaders/sample.vert \
