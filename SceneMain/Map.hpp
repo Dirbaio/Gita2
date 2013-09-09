@@ -18,7 +18,7 @@ class Map : public GameObject
 		struct Tile {
 				TileType type;
 				bool isSolid() const {
-					return (type == House || type == Fence);
+                    return (type == House || type == Fence || type == Garden);
 				}
 		};
 

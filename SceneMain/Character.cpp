@@ -11,7 +11,7 @@ Character::Character(SceneMain* sc) : GameObject(sc)
     hasGoal = false;
     mark = MARK_NONE;
     vel = 2.50f;
-    position = vec2f(10, 10);
+    position = vec2f(3, 3);
     std::vector<Vertex::Element> elements;
     elements.push_back(Vertex::Element(Vertex::Attribute::Position , Vertex::Element::Float, 3));
     elements.push_back(Vertex::Element(Vertex::Attribute::Color    , Vertex::Element::Float, 3));
@@ -63,24 +63,23 @@ void Character::move(vec2f posf)
 {
     const vec2f &pos0 = position;
 
-    vec2f sizs = vec2f(0.15, 0.07);
-    vec2f cens = vec2f(0.07, 0.06);
+    float rad = 0.3;
+    float margin = 0.1;
 
-    vec2f scen = sizs-cens;
     vec2f direction = posf - pos0;
 
     if (direction.y < 0) //Vamos hacia abajo
     {
         //le restamos a la Y la mitad de su tamaño para obtener la Y inferior del sprite
-        int yo =     int(pos0.y - scen.y),
-                yn = int(posf.y - scen.y),
-                xl = int(pos0.x - cens.x + 2),
-                xr = int(pos0.x + scen.x - 2);
+        int yo =     int(pos0.y - rad),
+                yn = int(posf.y - rad),
+                xl = int(pos0.x - rad+margin),
+                xr = int(pos0.x + rad-margin);
         for (int y = yo; y >= yn; y--)
             for (int x = xl; x <= xr; x++)
                 if (scene->map->solid(x,y) && onDownCollision(x, y))
                 {
-                    posf.y = int(y) + scen.y;
+                    posf.y = int(y) + 1 + rad;
                     goto vert_exit;
                 }
 
@@ -89,15 +88,15 @@ void Character::move(vec2f posf)
     else if (direction.y > 0) //Vamos hacia arriba
     {
         //le sumamos a la Y la mitad de su tamaño para obtener la Y superior del sprite
-        int yo = int(pos0.y + cens.y),
-                yn = int(posf.y + cens.y),
-                xl = int(pos0.x - cens.x + 2),
-                xr = int(pos0.x + scen.x - 2);
+        int yo = int(pos0.y + rad),
+                yn = int(posf.y + rad),
+                xl = int(pos0.x - rad+margin),
+                xr = int(pos0.x + rad-margin);
         for (int y = yo; y <= yn; y++)
             for (int x = xl; x <= xr; x++)
                 if (scene->map->solid(x,y) && onUpCollision(x, y))
                 {
-                    posf.y = int(y)+1 - cens.y;
+                    posf.y = int(y) - rad;
                     goto vert_exit;
                 }
 
@@ -107,17 +106,17 @@ vert_exit:
 
     if (direction.x < 0) //Vamos hacia la izquierda
     {
-        int xo = int(pos0.x - cens.x),
-                xn = int(posf.x - cens.x),
-                yb = int(pos0.y - scen.y + 2),
-                yt = int(pos0.y + cens.y - 2);
+        int xo = int(pos0.x - rad),
+                xn = int(posf.x - rad),
+                yb = int(pos0.y - rad+margin),
+                yt = int(pos0.y + rad-margin);
         for (int x = xo; x >= xn; x--)
         {
             for (int y = yb; y <= yt; y++)
             {
                 if (scene->map->solid(x,y) && onLeftCollision(x, y))
                 {
-                    posf.x = int(x)+1 +cens.x;
+                    posf.x = int(x)+1 + rad;
                     goto horz_exit;
                 }
             }
@@ -127,17 +126,17 @@ vert_exit:
     }
     else if (direction.x > 0) //Vamos hacia la derecha
     {
-        int xo = int(pos0.x + scen.x),
-                xn = int(posf.x + scen.x),
-                yb = int(pos0.y - scen.y + 2),
-                yt = int(pos0.y + cens.y - 2);
+        int xo = int(pos0.x + rad),
+                xn = int(posf.x + rad),
+                yb = int(pos0.y - rad+margin),
+                yt = int(pos0.y + rad-margin);
         for (int x = xo; x <= xn; x++)
         {
             for (int y = yb; y <= yt; y++)
             {
                 if (scene->map->solid(x,y) && onRightCollision(x, y))
                 {
-                    posf.x = int(x) - scen.x;
+                    posf.x = int(x) - rad;
                     goto horz_exit;
                 }
             }
@@ -267,7 +266,9 @@ void Character::moveInDir(vec2f dir, float deltaTime)
     if(dir.x >  0.5f) faceDir = FACE_RIGHT;
     if(dir.y >  0.5f) faceDir = FACE_DOWN;
 
-    move(position + dir*deltaTime*vel);
+    vec2f dest = position + dir*deltaTime*vel;
+    move(vec2f(position.x, dest.y));
+    move(vec2f(dest.x, position.y));
 }
 
 bool Character::canSee(const vec2f& pos)
