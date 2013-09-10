@@ -13,6 +13,9 @@ class Uniform {
 		void set(vec3f val);
 		void set(std::vector<vec3f> val);
 
+		void set(vec4f val);
+		void set(std::vector<vec4f> val);
+
 		void set(mat4f val);
 		void set(std::vector<mat4f> val);
 

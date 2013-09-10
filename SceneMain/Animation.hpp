@@ -50,12 +50,12 @@ class Animation
 		virtual void Update(float GameTime);
 
 		int getAnimID(std::string name);
-		int getLoopsLeft();
+		int getLoopsLeft() const;
 		bool setAnimData(AnimationData* data);
 		bool SelectAnim(std::string name);
 		bool SelectAnim(int animID);
 
-		vec4i getCurrentFrame();
+		vec4i getCurrentFrame() const;
 
 	private:
 		AnimationData* data;

@@ -40,6 +40,7 @@ Person::Person(SceneMain* sc) : Npc(sc) {
 	if (s_person_data[rand] == NULL) {
 		s_person_data[rand] = new AnimationData();
 		s_person_data[rand]->Load(s_person_dataFilenames[rand]);
+		anim.setAnimData(s_person_data[rand]);
 	}
 
 	//dieSoundBuff.loadFromFile("audio/wilhelmscream.ogg");

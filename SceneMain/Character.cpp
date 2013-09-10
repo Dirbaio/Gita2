@@ -51,7 +51,8 @@ void Character::draw() const
     //m = glm::scale(m,scale);
 
     mat4f transform = scene->getState().projection*scene->getState().view*m;
-    model.program->uniform("modelViewProjectionMatrix")->set(transform);
+	model.program->uniform("modelViewProjectionMatrix")->set(transform);
+	model.program->uniform("texBounds")->set(vec4f(anim.getCurrentFrame()));
 //	model.program->uniform("tex")->set()
     model.draw();
 }
@@ -60,6 +61,7 @@ void Character::update(float deltaTime)
 {
     vec2f dir = moveCharacter(deltaTime);
     moveInDir(dir, deltaTime);
+	anim.Update(deltaTime);
     pos = vec3f(position.x, 0, position.y);
 }
 

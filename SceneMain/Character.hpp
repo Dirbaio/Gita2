@@ -40,7 +40,7 @@ class Character : public GameObject
 	virtual bool onUpCollision(int x, int j);
 	virtual bool onDownCollision(int x, int j);
 
-	Animation* anim;
+	Animation anim;
 
 	FaceDir faceDir;
 	vec2f position;

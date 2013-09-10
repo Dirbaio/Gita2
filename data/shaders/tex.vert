@@ -10,5 +10,5 @@ varying vec2 vTexCoord;
 
 void main () {
     gl_Position = modelViewProjectionMatrix * vec4(a_position,1.0);
-    vTexCoord = mix(texBounds.xy, texBounds.zw, a_texCoord);
+    vTexCoord = texBounds.xy + texBounds.zw*a_texCoord;
 }

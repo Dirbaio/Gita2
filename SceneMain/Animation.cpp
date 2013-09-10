@@ -56,7 +56,7 @@ bool Animation::setAnimData(AnimationData* _data) {
 	return true;
 }
 
-vec4i Animation::getCurrentFrame() {
+vec4i Animation::getCurrentFrame() const {
 	assert(data != NULL);
 
 	AnimationTrack& anim = data->animations[animSelected];
@@ -72,7 +72,7 @@ int Animation::getAnimID(std::string name) {
 	return (int)it->second;
 }
 
-int Animation::getLoopsLeft() {
+int Animation::getLoopsLeft() const {
 	return loopsLeft;
 }
 
