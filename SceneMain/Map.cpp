@@ -235,3 +235,30 @@ vec2i Map::getRandomStreet() const
 	}
 	return vec2i(x, y);
 }
+
+bool Map::lineOfSight(vec2f from, vec2f to) const
+{
+
+	//Dice si una persona en FROM ve a una persona en TO
+	bool fromGrass = tile(from).isGrass(); //getTileAt(from) == 11;
+	bool toGrass = tile(to).isGrass(); //getTileAt(to) == 11;
+
+	//Desde fuera no se puede ver dentro..
+	if(!fromGrass && toGrass) return false;
+	float d = glm::distance(from, to);
+	if(fromGrass && toGrass && d > 0.8) return false;
+	if(d > 12) return false;
+
+	for(float i = 0; i <= 1; i+=0.05)
+	{
+		vec2f pt = from*i + to*(1.0f-i);
+		//Si los dos dentro, ha de ser todo grass.
+		if(fromGrass && !tile(pt).isGrass())
+			return false;
+		if(tile(pt).isSolid())
+			return false;
+	}
+
+	return true;
+
+}

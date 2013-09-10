@@ -13,7 +13,7 @@ Player::Player(SceneMain* sc) : Character(sc)
     myKills = 0;
 
     jailed = false;
-
+	vel = 5;
 
 	AnimationData* data = new AnimationData();
 	data->Load("data/anim/takena.anim");
@@ -41,7 +41,7 @@ vec2f Player::moveCharacter(float delta) {
     if (playerInput.getKeyDown(InputEng::PLAYER_ACTION)) {
 
         hitAction();
-		std::vector<Person*> persons = scene->getPeopleAround(getPosition(), 20, SceneMain::SEARCH_ANY);
+		std::vector<Person*> persons = scene->getPeopleAround(getPosition(), 1, SceneMain::SEARCH_ANY);
         for (std::vector<Person*>::iterator it = persons.begin(); it != persons.end(); ++it) {
             if (!(*it)->is_alive()) continue;
 

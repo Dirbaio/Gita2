@@ -200,12 +200,15 @@ void Character::moveInDir(vec2f dir, float deltaTime)
 
 bool Character::canSee(const vec2f& pos)
 {
-    vec2f dir_corpse = pos-position;
-    vec2f dir_facing((float) dirInc[faceDir].x, (float) dirInc[faceDir].y);
-    dir_corpse = glm::normalize(dir_corpse);
-    dir_facing = glm::normalize(dir_facing);
+	vec2f dirCorpse = pos-position;
+	if(glm::length(dirCorpse) > 12)
+		return false;
 
-    return glm::dot(dir_corpse,dir_facing) >= 0.0f; // && scene->city.visible(position, pos);
+	vec2f dirFacing((float) dirInc[faceDir].x, (float) dirInc[faceDir].y);
+	dirCorpse = glm::normalize(dirCorpse);
+	dirFacing = glm::normalize(dirFacing);
+
+	return glm::dot(dirCorpse,dirFacing) >= 0.0f && scene->map->lineOfSight(position, pos);
 }
 
 

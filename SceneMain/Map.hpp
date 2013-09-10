@@ -12,13 +12,17 @@ class Map : public GameObject
 			Crosswalk,
 			Garden,
 			House,
-			Fence
+			Fence,
+			Grass
 		};
 
 		struct Tile {
 				TileType type;
 				bool isSolid() const {
-                    return (type == House || type == Fence || type == Garden);
+					return (type == House || type == Fence || type == Garden);
+				}
+				bool isGrass() const {
+					return (type == Grass);
 				}
 		};
 
@@ -33,9 +37,12 @@ class Map : public GameObject
 
 		Tile tile(int x, int y) const;
 		Tile& tile(int x, int y);
+		Tile tile(vec2f p) const { return tile(int(p.x), int(p.y)); }
+		Tile& tile(vec2f p) { return tile(int(p.x), int(p.y)); }
 
         bool solid(int x, int y) const {return tile(x, y).isSolid(); }
         bool solid(float x, float y) const {return solid(int(x), int(y)); }
+		bool lineOfSight(vec2f from, vec2f to) const;
 
 		vec2i getRandomStreet() const;
 	private:

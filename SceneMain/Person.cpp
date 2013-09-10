@@ -140,7 +140,7 @@ vec2f Person::moveCharacter(float delta) {
 				for(int i = 0; i < (int)scene->players.size(); i++)
 				{
 					if(scene->players[i]->jailed) continue;
-					if (glm::distance(v[j]->position, lastSawPlayer[i]) < 70) knowsPlayers[i] = true;
+					if (glm::distance(v[j]->position, lastSawPlayer[i]) < 4) knowsPlayers[i] = true;
 				}
 			}
 
@@ -185,7 +185,7 @@ vec2f Person::moveCharacter(float delta) {
 			vec2f menacePos;
 			float bestd = getClosestMenace(position, menacePos);
 
-			if(bestd < 50)
+			if(bestd < 3)
 				return(vec2f(position - menacePos));
 			else
 			{
@@ -194,8 +194,8 @@ vec2f Person::moveCharacter(float delta) {
 					vec2i lol = now + dirInc[i];
 					if(scene->map->tile(lol.x, lol.y).isSolid()) continue;
 
-					float d = getClosestMenace(vec2f(lol.x * 64.0f + 32.0f,
-													 lol.y * 64.0f + 32.0f),
+					float d = getClosestMenace(vec2f(lol.x + 0.5f,
+													 lol.y + 0.5f),
 											   menacePos);
 					if(d > bestd) {
 						bestd = d;
@@ -203,7 +203,7 @@ vec2f Person::moveCharacter(float delta) {
 					}
 				}
 
-				vec2f togo = vec2f(best.x*64+ix, best.y*64+iy);
+				vec2f togo = vec2f(best.x+ix, best.y+iy);
 				vec2f dir  = togo - position;
 				return dir;
 			}
@@ -228,7 +228,7 @@ vec2f Person::moveCharacter(float delta) {
 				panicTime = startPanicTime;
 				panicSource = v[j]->getPosition();
 				for(int i = 0; i < (int)scene->players.size(); i++)
-					if (glm::distance(v[j]->position, lastSawPlayer[i]) < 70) knowsPlayers[i] = true;
+					if (glm::distance(v[j]->position, lastSawPlayer[i]) < 3) knowsPlayers[i] = true;
 			}
 
 
