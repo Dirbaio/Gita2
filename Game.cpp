@@ -10,6 +10,12 @@ Game::Game() : currentScene(NULL), nextScene(NULL) {
 }
 
 Game::~Game() {
+	if (currentScene != NULL) {
+		delete currentScene;
+		currentScene = NULL;
+	}
+	std::cout << "* EXITING GAME" << std::endl;
+	window.close();
 }
 
 // Init non-resource, general game frame stuff here.
@@ -65,77 +71,13 @@ void Game::update(float deltaTime) {
 			delete currentScene;
 		currentScene = nextScene;
 		nextScene = NULL;
-		if (!currentScene->init()) {
-			close();
-		}
 	}
 
 	//Check window events. Events handled by main game object (scene-independent):
 	// - Closing window
 	// - Resizing window & viewport
 	// - Updating window focus
-	inputManager.update();
-	sf::Event event;
-	while(window.pollEvent(event)) {
-		switch(event.type) {
-			case sf::Event::Closed:
-				close();
-				break;
-			case sf::Event::Resized:
-				inputManager.resizeWindow(event.size.height,event.size.width,
-										  renderState.projection);
-				break;
-			case sf::Event::GainedFocus:
-				inputManager.gainFocus();
-				break;
-			case sf::Event::LostFocus:
-				inputManager.loseFocus();
-				break;
-			case sf::Event::MouseButtonPressed:
-				inputManager.pressMouse(event.mouseButton.button);
-				break;
-			case sf::Event::MouseButtonReleased:
-				inputManager.releaseMouse(event.mouseButton.button);
-				break;
-			case sf::Event::MouseMoved:
-				inputManager.moveMouse(event.mouseMove.x,event.mouseMove.y);
-				break;
-			case sf::Event::KeyPressed:
-				inputManager.pressKey(event.key.code);
-				break;
-			case sf::Event::KeyReleased:
-				inputManager.releaseKey(event.key.code);
-				break;
-			default:
-				break;
-		}
-	}
-	//pass the key input to the scene
-	for (std::set<sf::Keyboard::Key>::iterator it=inputManager.keysPressed.begin(); it!=inputManager.keysPressed.end(); ++it) {
-			onKeyPressed(deltaTime,*it);
-	}
-	for (std::set<sf::Keyboard::Key>::iterator it=inputManager.keysDown.begin(); it!=inputManager.keysDown.end(); ++it) {
-			onKeyDown(deltaTime,*it);
-	}
-	for (std::set<sf::Keyboard::Key>::iterator it=inputManager.keysReleased.begin(); it!=inputManager.keysReleased.end(); ++it) {
-			onKeyReleased(deltaTime,*it);
-	}
-	//pass the mouse input to the scene
-	if(inputManager.mouseDisplacement != vec2i(0,0))
-		onMouseMoved(deltaTime,inputManager.mouseDisplacement.x,inputManager.mouseDisplacement.y);
-	for (std::set<sf::Mouse::Button>::iterator it=inputManager.mouseButtonsPressed.begin();
-		 it!=inputManager.mouseButtonsPressed.end(); ++it) {
-			onMouseButtonPressed(deltaTime,*it);
-	}
-	for (std::set<sf::Mouse::Button>::iterator it=inputManager.mouseButtonsDown.begin();
-		 it!=inputManager.mouseButtonsDown.end(); ++it) {
-			onMouseButtonDown(deltaTime,*it);
-	}
-	for (std::set<sf::Mouse::Button>::iterator it=inputManager.mouseButtonsReleased.begin();
-		 it!=inputManager.mouseButtonsReleased.end(); ++it) {
-			onMouseButtonReleased(deltaTime,*it);
-	}
-
+	InputManager::update(isRunning,window);
 	//Scene logic updating
 	if (currentScene != NULL)
 		currentScene->update(deltaTime);
@@ -147,54 +89,6 @@ void Game::draw() {
 	if (currentScene != NULL)
 		currentScene->draw();
 	window.display();
-}
-
-void Game::onKeyPressed(float deltaTime, const sf::Keyboard::Key &key) {
-	if (currentScene != NULL)
-		currentScene->onKeyPressed(deltaTime, key);
-}
-
-void Game::onKeyDown(float deltaTime, const sf::Keyboard::Key &key) {
-	if (currentScene != NULL)
-		currentScene->onKeyDown(deltaTime, key);
-}
-
-void Game::onKeyReleased(float deltaTime, const sf::Keyboard::Key &key) {
-	if (currentScene != NULL)
-		currentScene->onKeyReleased(deltaTime, key);
-}
-
-void Game::onMouseButtonPressed(float deltaTime, const sf::Mouse::Button &button) {
-	if (currentScene != NULL)
-		currentScene->onMouseButtonPressed(deltaTime, button);
-}
-
-void Game::onMouseButtonDown(float deltaTime, const sf::Mouse::Button &button) {
-	if (currentScene != NULL)
-		currentScene->onMouseButtonDown(deltaTime, button);
-}
-
-void Game::onMouseButtonReleased(float deltaTime, const sf::Mouse::Button &button) {
-	if (currentScene != NULL)
-		currentScene->onMouseButtonReleased(deltaTime, button);
-}
-
-void Game::onMouseMoved(float deltaTime, int dx, int dy) {
-	if (currentScene != NULL)
-		currentScene->onMouseMoved(deltaTime,dx,dy);
-}
-
-// Whenever you want to end the game, you must call this function, not the Scene's onClose(); method
-// End game-wide stuff here
-void Game::close() {
-	if (currentScene != NULL) {
-		currentScene->onClose();
-		delete currentScene;
-		currentScene = NULL;
-	}
-	std::cout << "* EXITING GAME" << std::endl;
-	window.close();
-	isRunning = false;
 }
 
 // Change scene so that on next this->update(), this->currentScene will be replaced

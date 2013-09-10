@@ -1,5 +1,6 @@
 #include "Player.hpp"
-
+#include "Person.hpp"
+#include "SceneMain.hpp"
 
 Player::Player(SceneMain* sc) : Character(sc)
 {
@@ -12,6 +13,13 @@ Player::Player(SceneMain* sc) : Character(sc)
     myKills = 0;
 
     jailed = false;
+
+
+	AnimationData* data = new AnimationData();
+	data->Load("data/anim/takena.anim");
+	anim.setAnimData(data);
+
+	texName = "player";
 }
 
 void Player::hitAction()
@@ -29,20 +37,20 @@ vec2f Player::moveCharacter(float delta) {
 
     playerInput.Update();
 
-    /*
+
     if (playerInput.getKeyDown(InputEng::PLAYER_ACTION)) {
 
         hitAction();
-        std::vector<Person*> persons = scene->getPeopleAround(getPosition(), 20, SEARCH_ANY);
+		std::vector<Person*> persons = scene->getPeopleAround(getPosition(), 20, SceneMain::SEARCH_ANY);
         for (std::vector<Person*>::iterator it = persons.begin(); it != persons.end(); ++it) {
             if (!(*it)->is_alive()) continue;
 
             (*it)->onHit();
             int n_moneys = Utils::randomInt(1, 3);
-            for (int i = 0; i < n_moneys; ++i) scene->spawnNewMoney((*it)->getPosition());
+			//for (int i = 0; i < n_moneys; ++i) scene->spawnNewMoney((*it)->getPosition());
         }
     }
-    */
+
 
 //    anim->Update(delta);
 
@@ -76,17 +84,13 @@ vec2f Player::moveCharacter(float delta) {
         if (playerInput.getKeyState(InputEng::PLAYER_RIGHT) && !playerInput.getKeyState(InputEng::PLAYER_LEFT))
             dir.x = 1;
 
-        return dir*vel*delta;
+		action = "Idle";
+		return dir*vel*delta;
     }
     else
     {
         actionDelay -= delta;
-
-        if (faceDir == FACE_UP)    ensureAnim("AttackUp");
-        if (faceDir == FACE_DOWN)  ensureAnim("AttackDown");
-        if (faceDir == FACE_LEFT)  ensureAnim("AttackLeft");
-        if (faceDir == FACE_RIGHT) ensureAnim("AttackRight");
-
+		action = "Attack";
         return vec2f(0, 0);
     }
 }

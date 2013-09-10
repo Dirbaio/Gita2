@@ -26,21 +26,25 @@ Character::Character(SceneMain* sc) : GameObject(sc)
     };
 
     std::vector<Vertex> data;
-	data.push_back(Vertex(vec3f(-0.3, 0.0, 0), vec2f(0.0, 0.0)));
-	data.push_back(Vertex(vec3f( 0.3, 0.0, 0), vec2f(1.0, 0.0)));
-	data.push_back(Vertex(vec3f(-0.3, 2.0, 0), vec2f(0.0, 1.0)));
-	data.push_back(Vertex(vec3f( 0.3, 0.0, 0), vec2f(1.0, 0.0)));
-	data.push_back(Vertex(vec3f( 0.3, 2.0, 0), vec2f(1.0, 1.0)));
-	data.push_back(Vertex(vec3f(-0.3, 2.0, 0), vec2f(0.0, 1.0)));
+	data.push_back(Vertex(vec3f(-0.5, 0.0, 0), vec2f(0.0, 1.0)));
+	data.push_back(Vertex(vec3f( 0.5, 0.0, 0), vec2f(1.0, 1.0)));
+	data.push_back(Vertex(vec3f(-0.5, 1.0, -0.5), vec2f(0.0, 0.0)));
+	data.push_back(Vertex(vec3f( 0.5, 0.0, 0), vec2f(1.0, 1.0)));
+	data.push_back(Vertex(vec3f( 0.5, 1.0, -0.5), vec2f(1.0, 0.0)));
+	data.push_back(Vertex(vec3f(-0.5, 1.0, -0.5), vec2f(0.0, 0.0)));
 
     mesh->setVertexData(&data[0],data.size());
     model.mesh = mesh;
 	model.program = scene->shaderTexture;
+	texName = "person";
+	action = "Idle";
 }
 
 void Character::ensureAnim(std::string name)
 {
-
+	if(name == currAnim) return;
+	currAnim = name;
+	anim.SelectAnim(name);
 }
 
 void Character::draw() const
@@ -50,10 +54,19 @@ void Character::draw() const
     //m = glm::rotate(m,GLOBALCLOCK.getElapsedTime().asSeconds()*50,vec3f(0,0,1));
     //m = glm::scale(m,scale);
 
+	TextureManager::
+	TextureManager::useTexture(texName, GL_TEXTURE2);
+	model.program->uniform("tex")->set(2);
+
     mat4f transform = scene->getState().projection*scene->getState().view*m;
 	model.program->uniform("modelViewProjectionMatrix")->set(transform);
-	model.program->uniform("texBounds")->set(vec4f(anim.getCurrentFrame()));
-//	model.program->uniform("tex")->set()
+	vec4f frame = vec4f(anim.getCurrentFrame());
+	vec2i size = TextureManager::getTextureSize(texName);
+	frame.x /= size.x;
+	frame.y /= size.y;
+	frame.z /= size.x;
+	frame.w /= size.y;
+	model.program->uniform("texBounds")->set(frame);
     model.draw();
 }
 
@@ -61,6 +74,16 @@ void Character::update(float deltaTime)
 {
     vec2f dir = moveCharacter(deltaTime);
     moveInDir(dir, deltaTime);
+
+	string action2 = action;
+	if(action2 == "Idle" && glm::length(dir) > 0.01)
+		action2 = "Walking";
+
+	if      (faceDir == FACE_UP)    ensureAnim(action2+"Up");
+	else if (faceDir == FACE_DOWN)  ensureAnim(action2+"Down");
+	else if (faceDir == FACE_LEFT)  ensureAnim(action2+"Left");
+	else if (faceDir == FACE_RIGHT) ensureAnim(action2+"Right");
+
 	anim.Update(deltaTime);
     pos = vec3f(position.x, 0, position.y);
 }

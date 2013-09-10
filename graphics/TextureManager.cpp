@@ -1,5 +1,7 @@
 #include "TextureManager.hpp"
 
+std::map<std::string,Texture*> TextureManager::textureBank;
+
 TextureManager::TextureManager() {
 }
 
@@ -28,6 +30,12 @@ void TextureManager::useTexture(const std::string& textureID, GLenum texUnit) {
 	}
 	else textureBank[textureID]->bind();
 	glActiveTexture(GL_TEXTURE0);
+}
+vec2i TextureManager::getTextureSize(const std::string& textureID) {
+	if (textureBank.count(textureID) == 0) {
+		std::cout << "#WARNING Trying to bind unexisting textureID: \"" << textureID << "\"" << std::endl;
+	}
+	return vec2i(textureBank[textureID]->getWidth(), textureBank[textureID]->getHeight());
 }
 
 void TextureManager::deleteTexture(const std::string& textureID) {

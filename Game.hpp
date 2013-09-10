@@ -32,13 +32,6 @@
 #include "graphics/Model.hpp"
 #include "graphics/ShaderProgram.hpp"
 
-struct RenderState {
-		RenderState() : model(1.0f), view(1.0f), projection(1.0f) {}
-		~RenderState() {}
-
-		mat4f model, view, projection;
-};
-
 class Game {
 	public:
 		Game(); //creates window
@@ -55,10 +48,6 @@ class Game {
 					  // first, saves game-wide stuff first.
 
 		sf::RenderWindow &getWindow() { return window; }
-		TextureManager &textures() { return texManager; }
-		AudioManager &audio() { return audioManager; }
-		InputManager &input() { return inputManager; }
-		RenderState &state() { return renderState; }
 		
 		bool isRunning;
 	private:
@@ -72,38 +61,11 @@ class Game {
 		void draw(); // calls currentScene.draw()
 		bool loadResources (); // loads game-wide resources. only called
 							   // by init() once
-		void onKeyPressed(float deltaTime, const sf::Keyboard::Key &key);
-										// currentScene.onKeyPressed
-										// (deltaTime, key)
-		void onKeyDown(float deltaTime, const sf::Keyboard::Key &key);
-										// currentScene.onKeyDown
-										// (deltaTime, key)
-		void onKeyReleased(float deltaTime, const sf::Keyboard::Key &key);
-										// currentScene.onKeyReleased
-										// (deltaTime, key)
-		void onMouseButtonPressed(float deltaTime, const sf::Mouse::Button &button);
-										// currentScene.onMouseButtonPressed
-										// (deltaTime, button)
-		void onMouseButtonDown(float deltaTime, const sf::Mouse::Button &button);
-										// currentScene.onMouseButtonDown
-										// (deltaTime, button)
-		void onMouseButtonReleased(float deltaTime, const sf::Mouse::Button &button);
-										// currentScene.onMouseButtonReleased
-										// (deltaTime, button)
-		void onMouseMoved(float deltaTime, int dx, int dy);
-										// currentScene.onMouseMoved
-										// (deltaTime)
 
 		//context
 		sf::RenderWindow window;
 		Scene* currentScene;
 		Scene* nextScene;
-
-		//managers
-		TextureManager texManager;
-		AudioManager audioManager;
-		InputManager inputManager;
-		RenderState renderState;
 };
 
 #endif //GAME_HPP

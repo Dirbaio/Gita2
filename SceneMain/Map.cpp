@@ -34,7 +34,7 @@ vector<Street> generateStreets(int size)
 
 	for(int i = 1; i < size; i++)
 	{
-		int t = rand()%4;
+		int t = Utils::randomInt(0, 3);
 		Street s;
 		s.pos = i;
 		s.sidewalk = streetTypes[t][0];
@@ -154,8 +154,6 @@ Map::Map(SceneMain* scene) : GameObject(scene)
 			for(int y = 0; y < width; y++)
 				tile(s.pos+y, x).type = Map::Sidewalk;
 	}*/
-
-	srand(time(0));
 
 	//Generate the mesh
 	vector<Vertex::Element> elements;

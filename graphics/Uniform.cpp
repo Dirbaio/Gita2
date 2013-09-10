@@ -17,6 +17,12 @@ Uniform::Uniform(unsigned int count, GLenum type, GLint location) :
 		case GL_FLOAT_MAT4:
 			size = sizeof(GLfloat)*16;
 			break;
+		case GL_INT:
+			size = sizeof(GLint);
+			break;
+		case GL_SAMPLER_2D:
+			size = sizeof(GLint);
+			break;
 		default:
 			break;
 	}
@@ -26,6 +32,9 @@ Uniform::Uniform(unsigned int count, GLenum type, GLint location) :
 
 Uniform::~Uniform() {
 }
+
+void Uniform::set(int val) {assert(type == GL_INT || type == GL_SAMPLER_2D);setBytes((char*)&val);}
+void Uniform::set(std::vector<int> val) {assert(type == GL_INT || type == GL_SAMPLER_2D);assert(val.size() == count);setBytes((char*)&val[0]);}
 
 void Uniform::set(float val) {assert(type == GL_FLOAT); assert(1 == count); setBytes((char*)&val);}
 void Uniform::set(std::vector<float> val) {assert(type == GL_FLOAT);assert(val.size() == count);setBytes((char*)&val[0]);}
@@ -49,6 +58,8 @@ void Uniform::ready() { //assumes program is binded already. Only to be called b
 		case GL_FLOAT_VEC3:	glUniform3fv(location,count,(GLfloat*)&lastValue[0]); break;
 		case GL_FLOAT_VEC4:	glUniform4fv(location,count,(GLfloat*)&lastValue[0]); break;
 		case GL_FLOAT_MAT4:	glUniformMatrix4fv(location,count,GL_FALSE,(GLfloat*)&lastValue[0]); break;
+		case GL_INT:		glUniform1iv(location,count,(GLint*)&lastValue[0]); break;
+		case GL_SAMPLER_2D:	glUniform1iv(location,count,(GLint*)&lastValue[0]); break;
 		default: break;
 	}
 }

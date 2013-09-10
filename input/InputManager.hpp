@@ -4,34 +4,31 @@
 
 class InputManager {
 	public:
+		static void update(bool& isGameRunning, sf::Window& window);
+		static bool isKeyPressed(sf::Keyboard::Key k) {return (keysPressed.find(k) != keysPressed.end());}
+		static bool isKeyDown(sf::Keyboard::Key k) {return (keysDown.find(k) != keysDown.end());}
+		static bool isKeyReleased(sf::Keyboard::Key k) {return (keysReleased.find(k) != keysReleased.end());}
+
+		static bool isMousePressed(sf::Mouse::Button b) {return (mouseButtonsPressed.find(b) != mouseButtonsPressed.end());}
+		static bool isMouseDown(sf::Mouse::Button b) {return (mouseButtonsDown.find(b) != mouseButtonsDown.end());}
+		static bool isMouseReleased(sf::Mouse::Button b) {return (mouseButtonsReleased.find(b) != mouseButtonsReleased.end());}
+
+		static void setMousePos(int x, int y, sf::Window &Window);
+
+		static std::set<sf::Keyboard::Key> keysPressed;
+		static std::set<sf::Keyboard::Key> keysDown;
+		static std::set<sf::Keyboard::Key> keysReleased;
+
+		static std::set<sf::Mouse::Button> mouseButtonsPressed;
+		static std::set<sf::Mouse::Button> mouseButtonsDown;
+		static std::set<sf::Mouse::Button> mouseButtonsReleased;
+
+	private:
+		static bool focus;
+		static vec2i lastMousePos;
+		static vec2i mouseDisplacement;
 		InputManager();
 		~InputManager();
-		void pressKey(sf::Keyboard::Key key);
-		void releaseKey(sf::Keyboard::Key key);
-		void pressMouse(sf::Mouse::Button key);
-		void releaseMouse(sf::Mouse::Button key);
-		void moveMouse(int dx, int dy);
-		void setMousePos(int x, int y);
-
-		void gainFocus();
-		void loseFocus();
-
-		void resizeWindow(int newHeight, int newWidth, mat4f &mat);
-
-		void update();
-
-		std::set<sf::Keyboard::Key> keysPressed;
-		std::set<sf::Keyboard::Key> keysDown;
-		std::set<sf::Keyboard::Key> keysReleased;
-
-		std::set<sf::Mouse::Button> mouseButtonsPressed;
-		std::set<sf::Mouse::Button> mouseButtonsDown;
-		std::set<sf::Mouse::Button> mouseButtonsReleased;
-
-		vec2i lastMousePos;
-		vec2i mouseDisplacement;
-
-		bool focus;
 };
 
 #endif // INPUTMANAGER_HPP

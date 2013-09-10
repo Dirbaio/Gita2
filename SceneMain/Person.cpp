@@ -40,8 +40,8 @@ Person::Person(SceneMain* sc) : Npc(sc) {
 	if (s_person_data[rand] == NULL) {
 		s_person_data[rand] = new AnimationData();
 		s_person_data[rand]->Load(s_person_dataFilenames[rand]);
-		anim.setAnimData(s_person_data[rand]);
 	}
+	anim.setAnimData(s_person_data[rand]);
 
 	//dieSoundBuff.loadFromFile("audio/wilhelmscream.ogg");
 	//dieSound.setBuffer(dieSoundBuff);
@@ -108,25 +108,6 @@ vec2f Person::moveCharacter(float delta) {
 				playerActionTime[i] = 0;
 			lastSawPlayer[i] = currPlayerPosition;
 		}
-	}
-
-	if (state == STATE_DEAD) {
-		if      (faceDir == FACE_UP)    ensureAnim("DeadUp");
-		else if (faceDir == FACE_DOWN)  ensureAnim("DeadDown");
-		else if (faceDir == FACE_LEFT)  ensureAnim("DeadLeft");
-		else if (faceDir == FACE_RIGHT) ensureAnim("DeadRight");
-	}
-	else if (state == STATE_CONFUSED) {
-		if      (faceDir == FACE_UP)    ensureAnim("IdleUp");
-		else if (faceDir == FACE_DOWN)  ensureAnim("IdleDown");
-		else if (faceDir == FACE_LEFT)  ensureAnim("IdleLeft");
-		else if (faceDir == FACE_RIGHT) ensureAnim("IdleRight");
-	}
-	else {
-		if      (faceDir == FACE_UP)    ensureAnim("WalkingUp");
-		else if (faceDir == FACE_DOWN)  ensureAnim("WalkingDown");
-		else if (faceDir == FACE_LEFT)  ensureAnim("WalkingLeft");
-		else if (faceDir == FACE_RIGHT) ensureAnim("WalkingRight");
 	}
 
 	switch(state)
@@ -280,6 +261,8 @@ vec2f Person::moveCharacter(float delta) {
 			return vec2f(0, 0);
 			break;
 		}
+		default:
+			return vec2f(0, 0);
 	}
 
 }

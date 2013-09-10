@@ -25,10 +25,11 @@ class Character : public GameObject
 	void draw() const;
 	virtual vec2f moveCharacter(float deltaTime);
 	vec2f getPosition() const { return position; }
-	void ensureAnim(std::string name);
 
 	protected:
 
+	string currAnim;
+	void ensureAnim(std::string name);
 
 	virtual void noLeftCollision() {}
 	virtual void noRightCollision(){}
@@ -41,6 +42,8 @@ class Character : public GameObject
 	virtual bool onDownCollision(int x, int j);
 
 	Animation anim;
+	string texName;
+	string action;
 
 	FaceDir faceDir;
 	vec2f position;

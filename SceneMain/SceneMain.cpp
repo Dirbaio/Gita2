@@ -6,10 +6,35 @@
 #include "Player.hpp"
 #include "House.hpp"
 #include "Person.hpp"
-
+#include <cassert>
 SceneMain::SceneMain(Game &parent) :
 	Scene(parent),
 	debugCounter(0.0), fpsCount(0) {
+
+
+	std::cout << "* Loading new scene: Main" << std::endl;
+	assert(loadResources());
+	//Center mouse
+	//sf::Mouse::setPosition(sf::Vector2i(SCRWIDTH/2,SCRHEIGHT/2),parent.getWindow());
+
+	int playerCount = 1;
+	players.resize(playerCount);
+	for(int i = 0; i < playerCount; i++)
+	{
+		players[i] = new Player(this);
+		addObject(players[i]);
+	}
+
+	playerNum = 0;
+
+	addObject(map = new Map(this));
+	addObject(new House(this,this->shaderHouse,vec3f(9,0,9),vec3f(2.5)));
+
+	for(int i = 0; i < 500; i++)
+	{
+		addObject(new Person(this));
+	}
+	std::cout << "* Init was succesful" << std::endl;
 }
 
 SceneMain::~SceneMain() {
@@ -32,36 +57,16 @@ bool SceneMain::loadResources() {
 		return false;
 	shaderHouse = s3;
 
-	return true;
-}
-
-bool SceneMain::init() {
-	std::cout << "* Loading new scene: Main" << std::endl;
-	if (!loadResources())
+	if(!TextureManager::loadTexture("person","data/img/person_sheet.png"))
 		return false;
-	//Center mouse
-	//sf::Mouse::setPosition(sf::Vector2i(SCRWIDTH/2,SCRHEIGHT/2),parent.getWindow());
+	if(!TextureManager::loadTexture("player","data/img/player_sheet.png"))
+		return false;
 
-	int playerCount = 1;
-	players.resize(playerCount);
-	for(int i = 0; i < playerCount; i++)
-	{
-		players[i] = new Player(this);
-		addObject(players[i]);
-	}
-
-	playerNum = 0;
-
-	addObject(map = new Map(this));
-	addObject(new House(this,this->shaderHouse,vec3f(9,0,9),vec3f(2.5)));
-
-	for(int i = 0; i < 500; i++)
-	{
-		addObject(new Person(this));
-	}
-	std::cout << "* Init was succesful" << std::endl;
+	glAlphaFunc(GL_GREATER, 0.5f);
+	glEnable(GL_ALPHA_TEST);
 	return true;
 }
+
 
 void SceneMain::update(float deltaTime) {
 
@@ -100,7 +105,7 @@ void SceneMain::onKeyPressed(float deltaTime, sf::Keyboard::Key key) {
 
 	switch(key) {
 		case sf::Keyboard::Escape:
-			parent.close();
+//			parent.close();
 			break;
 		default:
 			break;

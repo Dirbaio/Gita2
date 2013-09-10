@@ -11,7 +11,6 @@ public:
 
     virtual vec2f moveCharacter(float deltaTime);
     void hitAction();
-    void ensureAnim(string s) {}
     void gotCaught();
 
     int getMoney(){return myMoney;}
