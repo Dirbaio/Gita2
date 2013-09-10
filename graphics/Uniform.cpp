@@ -24,14 +24,16 @@ Uniform::Uniform(unsigned int count, GLenum type, GLint location) :
 Uniform::~Uniform() {
 }
 
-void Uniform::set(float val) {assert(type == GL_FLOAT);setBytes((char*)&val);}
+void Uniform::set(float val) {assert(type == GL_FLOAT); assert(1 == count); setBytes((char*)&val);}
 void Uniform::set(std::vector<float> val) {assert(type == GL_FLOAT);assert(val.size() == count);setBytes((char*)&val[0]);}
 
-void Uniform::set(vec3f val) {assert(type == GL_FLOAT_VEC3);setBytes((char*)&val[0]);}
+void Uniform::set(vec3f val) {assert(type == GL_FLOAT_VEC3);assert(1 == count); setBytes((char*)&val[0]);}
 void Uniform::set(std::vector<vec3f> val) {assert(type == GL_FLOAT_VEC3);assert(val.size() == count);setBytes((char*)&val[0][0]);}
 
-void Uniform::set(mat4f val) {assert(type == GL_FLOAT_MAT4);setBytes((char*)&val[0][0]);}
+void Uniform::set(mat4f val) {assert(type == GL_FLOAT_MAT4);assert(1 == count); setBytes((char*)&val[0][0]);}
 void Uniform::set(std::vector<mat4f> val) {assert(type == GL_FLOAT_MAT4);assert(val.size() == count);setBytes((char*)&val[0][0][0]);}
+
+//void Uniform::set(const sf::Texture& val) {assert(type == GL_SAMPLER_2D); assert(1 == count); setBytes((char*)val.);}
 
 void Uniform::ready() { //assumes program is binded already. Only to be called by ShaderProgram
 	if(!dirty) return;

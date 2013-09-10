@@ -22,7 +22,7 @@ TriangleObject::TriangleObject(SceneMain* parentScene, ShaderProgram *program, v
 	mesh->setVertexData(&data[0],data.size());
 	tri.mesh = mesh;
     if (program == NULL)
-		tri.program = parentScene->shaderExample;
+		tri.program = parentScene->shaderColor;
     else
 		tri.program = program;
 }

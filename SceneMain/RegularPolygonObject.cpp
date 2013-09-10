@@ -51,7 +51,7 @@ RegularPolygonObject::RegularPolygonObject(SceneMain* parentScene, ShaderProgram
     mesh->setVertexData(&data[0],data.size());
 	poly.mesh = mesh;
     if (program == NULL)
-		poly.program = parentScene->shaderExample;
+		poly.program = parentScene->shaderColor;
     else
 		poly.program = program;
 }

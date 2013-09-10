@@ -14,26 +14,28 @@ Character::Character(SceneMain* sc) : GameObject(sc)
 
     std::vector<Vertex::Element> elements;
     elements.push_back(Vertex::Element(Vertex::Attribute::Position , Vertex::Element::Float, 3));
-    elements.push_back(Vertex::Element(Vertex::Attribute::Color    , Vertex::Element::Float, 3));
+	elements.push_back(Vertex::Element(Vertex::Attribute::TexCoord , Vertex::Element::Float, 2));
 
     Vertex::Format format(elements);
     Mesh* mesh = new Mesh(format,0,false);
 
     struct Vertex {
-            Vertex(vec3f pos, vec3f color) : pos(pos) , color(color) {}
-            vec3f pos,color;
+			Vertex(vec3f pos, vec2f tex) : pos(pos) , tex(tex) {}
+			vec3f pos;
+			vec2f tex;
     };
+
     std::vector<Vertex> data;
-	data.push_back(Vertex(vec3f(-0.3, 0.0, 0), vec3f(0.0, 0.0, 1.0)));
-	data.push_back(Vertex(vec3f( 0.3, 0.0, 0), vec3f(1.0, 0.0, 0.0)));
-	data.push_back(Vertex(vec3f(-0.3, 2.0, 0), vec3f(0.0, 1.0, 0.0)));
-	data.push_back(Vertex(vec3f( 0.3, 0.0, 0), vec3f(1.0, 0.0, 0.0)));
-	data.push_back(Vertex(vec3f( 0.3, 2.0, 0), vec3f(0.0, 0.0, 1.0)));
-	data.push_back(Vertex(vec3f(-0.3, 2.0, 0), vec3f(0.0, 1.0, 0.0)));
+	data.push_back(Vertex(vec3f(-0.3, 0.0, 0), vec2f(0.0, 0.0)));
+	data.push_back(Vertex(vec3f( 0.3, 0.0, 0), vec2f(1.0, 0.0)));
+	data.push_back(Vertex(vec3f(-0.3, 2.0, 0), vec2f(0.0, 1.0)));
+	data.push_back(Vertex(vec3f( 0.3, 0.0, 0), vec2f(1.0, 0.0)));
+	data.push_back(Vertex(vec3f( 0.3, 2.0, 0), vec2f(1.0, 1.0)));
+	data.push_back(Vertex(vec3f(-0.3, 2.0, 0), vec2f(0.0, 1.0)));
 
     mesh->setVertexData(&data[0],data.size());
     model.mesh = mesh;
-    model.program = scene->shaderExample;
+	model.program = scene->shaderTexture;
 }
 
 void Character::ensureAnim(std::string name)
@@ -50,6 +52,7 @@ void Character::draw() const
 
     mat4f transform = scene->getState().projection*scene->getState().view*m;
     model.program->uniform("modelViewProjectionMatrix")->set(transform);
+//	model.program->uniform("tex")->set()
     model.draw();
 }
 

@@ -76,4 +76,10 @@ OTHER_FILES += \
     shaders/sample2.vert \
     shaders/sample2.frag \
     shaders/house.frag \
-    shaders/house.vert
+    shaders/house.vert \
+    data/shaders/house.vert \
+    data/shaders/house.frag \
+    data/shaders/tex.frag \
+    data/shaders/tex.vert \
+    data/shaders/color.frag \
+    data/shaders/color.vert

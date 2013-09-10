@@ -192,7 +192,7 @@ Map::Map(SceneMain* scene) : GameObject(scene)
 
 	mesh->setVertexData(&data[0],data.size());
 	model.mesh = mesh;
-	model.program = scene->shaderExample;
+	model.program = scene->shaderColor;
 }
 
 Map::~Map()

@@ -8,7 +8,7 @@
 #include "Person.hpp"
 
 SceneMain::SceneMain(Game &parent) :
-	Scene(parent), shaderExample(NULL),
+	Scene(parent),
 	debugCounter(0.0), fpsCount(0) {
 }
 
@@ -18,14 +18,14 @@ SceneMain::~SceneMain() {
 bool SceneMain::loadResources() {
 	//shaders
 	ShaderProgram* s = new ShaderProgram();
-	if(!s->makeProgram("data/shaders/sample.vert","data/shaders/sample.frag"))
+	if(!s->makeProgram("data/shaders/color.vert","data/shaders/color.frag"))
 		return false;
-	shaderExample = s;
+	shaderColor = s;
 
 	ShaderProgram* s2 = new ShaderProgram();
-	if(!s2->makeProgram("data/shaders/sample2.vert","data/shaders/sample2.frag"))
+	if(!s2->makeProgram("data/shaders/tex.vert","data/shaders/tex.frag"))
 		return false;
-	shaderExample2 = s2;
+	shaderTexture= s2;
 
 	ShaderProgram* s3 = new ShaderProgram();
 	if(!s3->makeProgram("data/shaders/house.vert","data/shaders/house.frag"))
@@ -162,8 +162,9 @@ void SceneMain::onClose() {
 	std::cout << "* Deleting GameObjects on SceneMain" << std::endl;
 	for(std::list<GameObject*>::iterator it = objects.begin(); it != objects.end(); ++it)
 		delete *it;
-	delete shaderExample;
-	delete shaderExample2;
+	delete shaderTexture;
+	delete shaderColor;
+	delete shaderHouse;
 }
 
 void SceneMain::addObject(GameObject* object) {

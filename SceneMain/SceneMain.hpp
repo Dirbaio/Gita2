@@ -36,8 +36,8 @@ class SceneMain : public Scene {
 
 	void addObject(GameObject* object);
 
-	ShaderProgram* shaderExample; //I have not done a shader manager yet :/
-	ShaderProgram* shaderExample2;
+	ShaderProgram* shaderTexture;
+	ShaderProgram* shaderColor;
 	ShaderProgram* shaderHouse;
 
 	Map* map;

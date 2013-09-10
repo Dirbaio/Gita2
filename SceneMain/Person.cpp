@@ -36,7 +36,7 @@ Person::Person(SceneMain* sc) : Npc(sc) {
 
 	confuseCooldown = 0.0f;
 
-	int rand = 0; //Utils::randomInt(0, NUANIMS_DATA-1);
+	int rand = Utils::randomInt(0, NUANIMS_DATA-1);
 	if (s_person_data[rand] == NULL) {
 		s_person_data[rand] = new AnimationData();
 		s_person_data[rand]->Load(s_person_dataFilenames[rand]);
