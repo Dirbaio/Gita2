@@ -61,6 +61,8 @@ bool SceneMain::loadResources() {
 		return false;
 	if(!TextureManager::loadTexture("player","data/img/player_sheet.png"))
 		return false;
+	if(!TextureManager::loadTexture("police","data/img/police_sheet.png"))
+		return false;
 
 	glAlphaFunc(GL_GREATER, 0.5f);
 	glEnable(GL_ALPHA_TEST);

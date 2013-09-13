@@ -30,7 +30,7 @@ class Person : public Npc {
 	float getClosestMenace(vec2f pos, vec2f& menacePos);
 	void lookAtRandomPlace();
 
-	int ix, iy;
+	float ix, iy;
 	vector<bool> knowsPlayers;
 	vector<vec2f> lastSawPlayer;
 	vector<float> playerActionTime;

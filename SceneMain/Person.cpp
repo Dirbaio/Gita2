@@ -53,8 +53,8 @@ Person::Person(SceneMain* sc) : Npc(sc) {
 	if(Utils::randomBool(5))
 		velMult = 4;
 
-	ix = Utils::randomInt(8, 56);
-	iy = Utils::randomInt(8, 56);
+	ix = Utils::randomFloat(0.4, 0.6);
+	iy = Utils::randomFloat(0.4, 0.6);
 
 	position = vec2f(sc->map->getRandomStreet())+0.5f;
 }
@@ -194,9 +194,7 @@ vec2f Person::moveCharacter(float delta) {
 					vec2i lol = now + dirInc[i];
 					if(scene->map->tile(lol.x, lol.y).isSolid()) continue;
 
-					float d = getClosestMenace(vec2f(lol.x + 0.5f,
-													 lol.y + 0.5f),
-											   menacePos);
+					float d = getClosestMenace(vec2f(lol.x + 0.5f, lol.y + 0.5f), menacePos);
 					if(d > bestd) {
 						bestd = d;
 						best = lol;

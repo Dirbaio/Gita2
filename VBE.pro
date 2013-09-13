@@ -33,7 +33,8 @@ SOURCES += \
     SceneMain/Npc.cpp \
     SceneMain/House.cpp \
     SceneMain/Animation.cpp \
-    Utils.cpp
+    Utils.cpp \
+    SceneMain/Police.cpp
 
 HEADERS += \
     Scene.hpp \
@@ -66,7 +67,8 @@ HEADERS += \
     SceneMain/Npc.hpp \
     SceneMain/House.hpp \
     SceneMain/Animation.hpp \
-    Utils.hpp
+    Utils.hpp \
+    SceneMain/Police.hpp
 
 OTHER_FILES += \
     data/shaders/*.vert \
