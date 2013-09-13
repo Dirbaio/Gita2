@@ -14,7 +14,7 @@ Police::Police(SceneMain *sc) : Npc(sc)
 
 	state = STATE_PATROL_WATCHING;
 
-	AnimationData* data;
+	AnimationData* data = new AnimationData();
 	data->Load("data/anim/poli.anim");
 	anim.setAnimData(data);
 
@@ -29,7 +29,7 @@ vec2f Police::moveCharacter(float delta)
 	collided = false;
 
 	//TODO Multiplayer logic
-	Player* p = scene->players[0];
+//	Player* p = scene->players[0];
 
 	std::vector<Person*> personList = scene->getPeopleSeen(this, SceneMain::SEARCH_ANY);
 	for (std::vector<Person*>::iterator it = personList.begin(); it != personList.end(); it++)
@@ -165,7 +165,7 @@ vec2f Police::moveCharacter(float delta)
 		case STATE_PATROL_MOVING:
 		{
 			mark = MARK_NONE;
-			vel = 20.0f;
+			vel = 1.5f;
 			if (!hasGoal) {
 				state = STATE_PATROL_WATCHING;
 				watchingTime = Utils::randomInt(2, 6);
@@ -179,7 +179,7 @@ vec2f Police::moveCharacter(float delta)
 		case STATE_PATROL_WATCHING:
 		{
 			mark = MARK_NONE;
-			vel = 20.0f;
+			vel = 1.5f;
 			watchingTime -= delta;
 			watchingTimeFacing -= delta;
 
@@ -197,7 +197,7 @@ vec2f Police::moveCharacter(float delta)
 		}
 		case STATE_ALERT:
 		{
-			vel = 60.0f;
+			vel = 4.5f;
 			mark = MARK_QUESTION;
 			alertTime -= delta;
 
@@ -211,7 +211,7 @@ vec2f Police::moveCharacter(float delta)
 		}
 		case STATE_CONFUSE:
 		{
-			vel = 30.0f;
+			vel = 2.0f;
 			mark = MARK_QUESTION;
 			alertTime -= delta;
 
@@ -225,7 +225,7 @@ vec2f Police::moveCharacter(float delta)
 		}
 		case STATE_CHASING_PLAYER:
 		{
-			vel = 75.0f;
+			vel = 3.0f;
 			mark = MARK_RED_EXCLAMATION;
 
 			lastPosSawTime[chasingPlayerNum] -= delta;
@@ -238,7 +238,7 @@ vec2f Police::moveCharacter(float delta)
 				lastPosSawTime[chasingPlayerNum] = 5;
 			}
 
-			if (glm::distance(position, lastPosSawPlayer[chasingPlayerNum]) <= 12)
+			if (glm::distance(position, lastPosSawPlayer[chasingPlayerNum]) <= 1)
 				state = STATE_PLAYER_LOST;
 
 			if (lastPosSawTime[chasingPlayerNum] < 0)
@@ -248,25 +248,25 @@ vec2f Police::moveCharacter(float delta)
 				lastAlertPos = lastPosSawPlayer[chasingPlayerNum];
 			}
 
-			if (glm::distance(position, p.getPosition()) <= 12)
+			if (glm::distance(position, p->getPosition()) <= 1)
 			{
 				state = STATE_PATROL_MOVING;
-				p.gotCaught();
+				p->gotCaught();
 			}
 
-			return lastPosSawPlayer[chasingPlayerNum]-position
+			return lastPosSawPlayer[chasingPlayerNum]-position;
 		}
 		case STATE_PLAYER_LOST:
 		{
-			vel = 60.0f;
+			vel = 2.75f;
 			mark = MARK_QUESTION;
 			lastPosSawTime[chasingPlayerNum] -= delta;
 
-			Player& p = scene->players[chasingPlayerNum];
-			if(canSee(p.getPosition()))
+			Player* p = scene->players[chasingPlayerNum];
+			if(canSee(p->getPosition()))
 			{
-				lastDirSawPlayer[chasingPlayerNum] = p.getPosition()-lastPosSawPlayer[chasingPlayerNum];
-				lastPosSawPlayer[chasingPlayerNum] = p.getPosition();
+				lastDirSawPlayer[chasingPlayerNum] = p->getPosition()-lastPosSawPlayer[chasingPlayerNum];
+				lastPosSawPlayer[chasingPlayerNum] = p->getPosition();
 				lastPosSawTime[chasingPlayerNum] = 5;
 				state = STATE_CHASING_PLAYER;
 			}
@@ -276,7 +276,6 @@ vec2f Police::moveCharacter(float delta)
 					lastDirSawPlayer[chasingPlayerNum].x *= -1;
 					lastDirSawPlayer[chasingPlayerNum].y *= -1;
 				}
-				moveInDir(lastDirSawPlayer[chasingPlayerNum]);
 
 				if (lastPosSawTime[chasingPlayerNum] < 0 || collided)
 				{
@@ -286,26 +285,33 @@ vec2f Police::moveCharacter(float delta)
 				}
 			}
 
-			break;
+			return lastDirSawPlayer[chasingPlayerNum];
 		}
 	}
 }
 
+static vec2i dirInc[] = {
+	vec2i(0,-1),
+	vec2i(0, 1),
+	vec2i(-1,0),
+	vec2i( 1,0)
+};
+
 vec2f Police::getNewGoal(vec2f pos)
 {
-	int distGoal = 5;
-	std::vector<sf::Vector2i> goals;
+	int distGoal = 10;
+	std::vector<vec2i> goals;
 
-	sf::Vector2i from = scene->city.absoluteToTilePos(pos);
+	vec2i from = vec2i(pos);
 
-	vector<vector<int> > vis(TILESIZE, vector<int>(TILESIZE, -1));
+	vector<vector<int> > vis(scene->map->getWidth(), vector<int>(scene->map->getHeight(), -1));
 
-	queue<sf::Vector2i> q;
+	queue<vec2i> q;
 	q.push(from);
 	vis[from.x][from.y] = 0;
 	while(!q.empty())
 	{
-		sf::Vector2i v = q.front();
+		vec2i v = q.front();
 		int dist = vis[v.x][v.y];
 		q.pop();
 
@@ -314,30 +320,30 @@ vec2f Police::getNewGoal(vec2f pos)
 
 		for(int i = 0; i < 4; i++)
 		{
-			sf::Vector2i v2 = v + dirInc[i];
-			if(v2.x < 0 || v2.x >= TILESIZE) continue;
-			if(v2.y < 0 || v2.y >= TILESIZE) continue;
-			if(scene->city.occupedIJ(v2.x, v2.y)) continue;
+			vec2i v2 = v + dirInc[i];
+			if(v2.x < 0 || v2.x >= scene->map->getWidth()) continue;
+			if(v2.y < 0 || v2.y >= scene->map->getHeight()) continue;
+			if(scene->map->tile(v2.x, v2.y).isSolid()) continue;
 			if(vis[v2.x][v2.y] != -1) continue;
 			vis[v2.x][v2.y] = dist+1;
 			q.push(v2);
 		}
 	}
 
-	sf::Vector2i goal = goals[Utils::randomInt(0, goals.size()-2)];
-	return vec2f(goal.x*64+Utils::randomInt(8, 56), goal.y*64+Utils::randomInt(8, 56));
+	vec2i goal = goals[Utils::randomInt(0, goals.size()-2)];
+	return vec2f(goal.x + Utils::randomFloat(0.3, 0.7), goal.y + Utils::randomFloat(0.3, 0.7));
 
 }
 
 void Police::lookAtRandomPlace()
 {
-	sf::Vector2i v = scene->city.absoluteToTilePos(position);
+	vec2i v = vec2i(position);
 
 	int i = 0;
 	while(i < 4) {
-		faceDir = Utils::randomInt(FACE_UP, FACE_RIGHT);
-		sf::Vector2i v2 = v + dirInc[faceDir];
-		if(!scene->city.occupedIJ(v2.x, v2.y)) break;
+		faceDir = (FaceDir)Utils::randomInt(FACE_UP, FACE_RIGHT);
+		vec2i v2 = v + dirInc[faceDir];
+		if(!scene->map->tile(v2.x, v2.y).isSolid()) break;
 		i++;
 	}
 }

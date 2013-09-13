@@ -8,6 +8,7 @@ class ShaderProgram;
 class Player;
 class Person;
 class Character;
+class Police;
 
 class SceneMain : public Scene {
     public:
@@ -45,6 +46,8 @@ class SceneMain : public Scene {
 
 	std::vector<Person*> getPeopleAround(vec2f pos, float r, SearchType st);
 	std::vector<Person*> getPeopleSeen(Character* c, SearchType st);
+	std::vector<Police*> getPolices();
+
     private:
 	bool loadResources();
 

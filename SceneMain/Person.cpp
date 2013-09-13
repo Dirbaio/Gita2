@@ -66,6 +66,10 @@ float Person::getClosestMenace(vec2f pos, vec2f& menacePos)
 	menacePos.x = 0;
 	menacePos.y = 0;
 	menacePos += panicSource;
+
+	/*
+
+	//TODO FIX THIS SHIT
 	for(int i = 0; i < (int)scene->players.size(); i++)
 	{
 		if(scene->players[i]->jailed) continue;
@@ -80,6 +84,8 @@ float Person::getClosestMenace(vec2f pos, vec2f& menacePos)
 		menacePos += v[i]->getPosition();
 		menaceCount++;
 	}
+*/
+
 
 	menacePos /= float(menaceCount);
 	return glm::distance(pos, menacePos);
@@ -155,9 +161,9 @@ vec2f Person::moveCharacter(float delta) {
 					confuseCooldown    = (float) Utils::randomInt(6,12);
 				}
 			}
-			else {
+			else
 				confuseCooldown -= delta;
-			}
+
 
 			return dirTowardsGoal();
 		}

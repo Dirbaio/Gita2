@@ -75,7 +75,7 @@ void Npc::setGoal(vec2f goal) {
     path = queue<vec2f>();
 
     vec2i ant(-1, -1);
-    vec2f antf(16, 16);
+	vec2f antf(0.5, 0.5);
     for(int i = 0; i < v.size(); i++)
     {
 

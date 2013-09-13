@@ -7,11 +7,12 @@
 #include "House.hpp"
 #include "Person.hpp"
 #include <cassert>
+#include "Police.hpp"
+
 SceneMain::SceneMain(Game &parent) :
 	Scene(parent),
-	debugCounter(0.0), fpsCount(0) {
-
-
+	debugCounter(0.0), fpsCount(0)
+{
 	std::cout << "* Loading new scene: Main" << std::endl;
 	assert(loadResources());
 	//Center mouse
@@ -33,6 +34,10 @@ SceneMain::SceneMain(Game &parent) :
 	for(int i = 0; i < 500; i++)
 	{
 		addObject(new Person(this));
+	}
+	for(int i = 0; i < 50; i++)
+	{
+	//	addObject(new Police(this));
 	}
 	std::cout << "* Init was succesful" << std::endl;
 }
@@ -214,6 +219,20 @@ std::vector<Person*> SceneMain::getPeopleSeen(Character* c, SceneMain::SearchTyp
 					&& c->canSee(p->getPosition()))
 				res.push_back(p);
 		}
+	}
+
+	return res;
+}
+
+std::vector<Police*> SceneMain::getPolices()
+{
+	std::vector<Police*> res;
+
+	for(std::list<GameObject*>::iterator it = objects.begin(); it != objects.end(); ++it)
+	{
+		Police* p = dynamic_cast<Police*> (*it);
+		if(p)
+			res.push_back(p);
 	}
 
 	return res;
