@@ -31,14 +31,15 @@ SceneMain::SceneMain(Game &parent) :
 	addObject(map = new Map(this));
 	addObject(new House(this,this->shaderHouse,vec3f(9,0,9),vec3f(2.5)));
 
-	for(int i = 0; i < 500; i++)
-	{
+	for(int i = 0; i < 700; i++)
 		addObject(new Person(this));
-	}
 	for(int i = 0; i < 50; i++)
-	{
-	//	addObject(new Police(this));
-	}
+		addObject(new Police(this));
+
+	int size = map->getWidth()*map->getHeight();
+	estructuraPepinoPeople = new std::vector<Person*> [size];
+	estructuraPepinoPolice = new std::vector<Police*> [size];
+
 	std::cout << "* Init was succesful" << std::endl;
 }
 
@@ -69,6 +70,32 @@ bool SceneMain::loadResources() {
 	if(!TextureManager::loadTexture("police","data/img/police_sheet.png"))
 		return false;
 
+	//Person model
+	std::vector<Vertex::Element> elements;
+	elements.push_back(Vertex::Element(Vertex::Attribute::Position , Vertex::Element::Float, 3));
+	elements.push_back(Vertex::Element(Vertex::Attribute::TexCoord , Vertex::Element::Float, 2));
+
+	Vertex::Format format(elements);
+	Mesh* mesh = new Mesh(format,0,false);
+
+	struct Vertex {
+			Vertex(vec3f pos, vec2f tex) : pos(pos) , tex(tex) {}
+			vec3f pos;
+			vec2f tex;
+	};
+
+	std::vector<Vertex> data;
+	data.push_back(Vertex(vec3f(-0.5, 0.0, 0), vec2f(0.0, 1.0)));
+	data.push_back(Vertex(vec3f( 0.5, 0.0, 0), vec2f(1.0, 1.0)));
+	data.push_back(Vertex(vec3f(-0.5, 1.0, -0.5), vec2f(0.0, 0.0)));
+	data.push_back(Vertex(vec3f( 0.5, 0.0, 0), vec2f(1.0, 1.0)));
+	data.push_back(Vertex(vec3f( 0.5, 1.0, -0.5), vec2f(1.0, 0.0)));
+	data.push_back(Vertex(vec3f(-0.5, 1.0, -0.5), vec2f(0.0, 0.0)));
+
+	mesh->setVertexData(&data[0],data.size());
+	personModel.mesh = mesh;
+	personModel.program = shaderTexture;
+
 	glAlphaFunc(GL_GREATER, 0.5f);
 	glEnable(GL_ALPHA_TEST);
 	return true;
@@ -84,6 +111,33 @@ void SceneMain::update(float deltaTime) {
 		debugCounter -= 1;
 		fpsCount = 0;
 	}
+
+	int width = map->getWidth();
+	int height = map->getHeight();
+
+	for(int i = 0; i < width*height; i++)
+	{
+		estructuraPepinoPeople[i].clear();
+		estructuraPepinoPolice[i].clear();
+	}
+
+	for (std::list<GameObject*>::iterator it = objects.begin(); it != objects.end(); ++it) {
+		Person* pers = dynamic_cast<Person*> (*it);
+		if(pers)
+		{
+			vec2i p = vec2i(pers->getPosition());
+			if(!map->validTile(p.x, p.y)) continue;
+			estructuraPepinoPeople[p.x+p.y*width].push_back(pers);
+		}
+		Police* pol = dynamic_cast<Police*> (*it);
+		if(pol)
+		{
+			vec2i p = vec2i(pol->getPosition());
+			if(!map->validTile(p.x, p.y)) continue;
+			estructuraPepinoPolice[p.x+p.y*width].push_back(pol);
+		}
+	}
+
 	for(std::list<GameObject*>::iterator it = objects.begin();it != objects.end(); ++it) {
 		(*it)->update(deltaTime);
 	}
@@ -183,6 +237,69 @@ void SceneMain::addObject(GameObject* object) {
 	objects.push_back(object);
 }
 
+vector<Person*> SceneMain::getPeopleAround(vec2f pos, float r, SearchType st)
+{
+	vec2f min = pos - r;
+	vec2f max = pos + r;
+
+	vec2i imin = vec2i(min);
+	vec2i imax = vec2i(max+1.0f);
+
+	imin = glm::max(imin, vec2i(0, 0));
+	imax = glm::min(imax, vec2i(map->getWidth()-1, map->getHeight()-1));
+
+	int width = map->getWidth();
+
+	vector<Person*> res;
+	for(int x = imin.x; x <= imax.x; x++) {
+		for(int y = imin.y; y <= imax.y; y++)
+		{
+			vector<Person*>& v = estructuraPepinoPeople[x+y*width];
+			for(int i = 0; i < (int) v.size(); i++)
+				if( (st == SEARCH_ANY ||
+					 (st == SEARCH_DEAD && !v[i]->is_alive()) ||
+					 (st == SEARCH_PANIC && v[i]->getState() == Person::STATE_PANIC))
+						&& glm::distance(pos, v[i]->getPosition()) <= r)
+					res.push_back(v[i]);
+		}
+	}
+
+	return res;
+}
+
+std::vector<Person*> SceneMain::getPeopleSeen(Character* c, SceneMain::SearchType st)
+{
+	float r = 12;
+	vec2f pos = c->getPosition();
+
+	vec2f min = pos - r;
+	vec2f max = pos + r;
+
+	vec2i imin = vec2i(min);
+	vec2i imax = vec2i(max+1.0f);
+
+	imin = glm::max(imin, vec2i(0, 0));
+	imax = glm::min(imax, vec2i(map->getWidth()-1, map->getHeight()-1));
+
+	int width = map->getWidth();
+
+	vector<Person*> res;
+	for(int x = imin.x; x <= imax.x; x++) {
+		for(int y = imin.y; y <= imax.y; y++)
+		{
+			vector<Person*>& v = estructuraPepinoPeople[x+y*width];
+			for(int i = 0; i < (int) v.size(); i++)
+				if( (st == SEARCH_ANY ||
+					 (st == SEARCH_DEAD && !v[i]->is_alive()) ||
+					 (st == SEARCH_PANIC && v[i]->getState() == Person::STATE_PANIC))
+						&& c->canSee(v[i]->getPosition()))
+					res.push_back(v[i]);
+		}
+	}
+	return res;
+}
+
+/*
 std::vector<Person*> SceneMain::getPeopleAround(vec2f pos, float r, SceneMain::SearchType st)
 {
 	std::vector<Person*> res;
@@ -203,6 +320,7 @@ std::vector<Person*> SceneMain::getPeopleAround(vec2f pos, float r, SceneMain::S
 	return res;
 }
 
+
 std::vector<Person*> SceneMain::getPeopleSeen(Character* c, SceneMain::SearchType st)
 {
 
@@ -222,7 +340,7 @@ std::vector<Person*> SceneMain::getPeopleSeen(Character* c, SceneMain::SearchTyp
 	}
 
 	return res;
-}
+}*/
 
 std::vector<Police*> SceneMain::getPolices()
 {

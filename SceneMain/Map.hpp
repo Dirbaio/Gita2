@@ -39,6 +39,9 @@ class Map : public GameObject
 		Tile& tile(int x, int y);
 		Tile tile(vec2f p) const { return tile(int(p.x), int(p.y)); }
 		Tile& tile(vec2f p) { return tile(int(p.x), int(p.y)); }
+		inline bool validTile(int x, int y) const {
+			return x >= 0 && x < getWidth() && y >= 0 && y < getHeight();
+		}
 
         bool solid(int x, int y) const {return tile(x, y).isSolid(); }
         bool solid(float x, float y) const {return solid(int(x), int(y)); }

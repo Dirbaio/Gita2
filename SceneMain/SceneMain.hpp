@@ -40,6 +40,8 @@ class SceneMain : public Scene {
 	ShaderProgram* shaderTexture;
 	ShaderProgram* shaderColor;
 	ShaderProgram* shaderHouse;
+	Model personModel;
+	Model shadowModel;
 
 	Map* map;
 	std::vector<Player*> players;
@@ -49,6 +51,10 @@ class SceneMain : public Scene {
 	std::vector<Police*> getPolices();
 
     private:
+
+	std::vector<Person*>* estructuraPepinoPeople;
+	std::vector<Police*>* estructuraPepinoPolice;
+
 	bool loadResources();
 
 	int playerNum;

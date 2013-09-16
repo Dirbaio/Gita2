@@ -22,6 +22,8 @@ Police::Police(SceneMain *sc) : Npc(sc)
 
 	watchingTime = 0;
 	watchingTimeFacing = 0;
+
+	position = vec2f(sc->map->getRandomStreet())+0.5f;
 }
 
 vec2f Police::moveCharacter(float delta)

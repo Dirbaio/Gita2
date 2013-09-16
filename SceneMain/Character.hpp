@@ -51,8 +51,6 @@ class Character : public GameObject
 	float vel;
 
 	void moveInDir(vec2f dir, float deltaTime);
-
-	Model model;
 };
 
 #endif // CHARACTER_H

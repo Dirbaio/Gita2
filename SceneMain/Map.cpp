@@ -212,14 +212,14 @@ void Map::draw() const
 
 Map::Tile Map::tile(int x, int y) const
 {
-	assert(x >= 0 && x < getWidth() && y >= 0 && y < getHeight());
+	assert(validTile(x, y));
 	return tiles[x][y];
 }
 
 
 Map::Tile& Map::tile(int x, int y)
 {
-	assert(x >= 0 && x < getWidth() && y >= 0 && y < getHeight());
+	assert(validTile(x, y));
 	return tiles[x][y];
 }
 

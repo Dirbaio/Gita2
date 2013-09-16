@@ -12,30 +12,6 @@ Character::Character(SceneMain* sc) : GameObject(sc)
     position = vec2f(3, 3);
 	faceDir = FACE_DOWN;
 
-    std::vector<Vertex::Element> elements;
-    elements.push_back(Vertex::Element(Vertex::Attribute::Position , Vertex::Element::Float, 3));
-	elements.push_back(Vertex::Element(Vertex::Attribute::TexCoord , Vertex::Element::Float, 2));
-
-    Vertex::Format format(elements);
-    Mesh* mesh = new Mesh(format,0,false);
-
-    struct Vertex {
-			Vertex(vec3f pos, vec2f tex) : pos(pos) , tex(tex) {}
-			vec3f pos;
-			vec2f tex;
-    };
-
-    std::vector<Vertex> data;
-	data.push_back(Vertex(vec3f(-0.5, 0.0, 0), vec2f(0.0, 1.0)));
-	data.push_back(Vertex(vec3f( 0.5, 0.0, 0), vec2f(1.0, 1.0)));
-	data.push_back(Vertex(vec3f(-0.5, 1.0, -0.5), vec2f(0.0, 0.0)));
-	data.push_back(Vertex(vec3f( 0.5, 0.0, 0), vec2f(1.0, 1.0)));
-	data.push_back(Vertex(vec3f( 0.5, 1.0, -0.5), vec2f(1.0, 0.0)));
-	data.push_back(Vertex(vec3f(-0.5, 1.0, -0.5), vec2f(0.0, 0.0)));
-
-    mesh->setVertexData(&data[0],data.size());
-    model.mesh = mesh;
-	model.program = scene->shaderTexture;
 	texName = "person";
 	action = "Idle";
 }
@@ -56,18 +32,18 @@ void Character::draw() const
 
 	TextureManager::
 	TextureManager::useTexture(texName, GL_TEXTURE2);
-	model.program->uniform("tex")->set(2);
+	scene->personModel.program->uniform("tex")->set(2);
 
     mat4f transform = scene->getState().projection*scene->getState().view*m;
-	model.program->uniform("modelViewProjectionMatrix")->set(transform);
+	scene->personModel.program->uniform("modelViewProjectionMatrix")->set(transform);
 	vec4f frame = vec4f(anim.getCurrentFrame());
 	vec2i size = TextureManager::getTextureSize(texName);
 	frame.x /= size.x;
 	frame.y /= size.y;
 	frame.z /= size.x;
 	frame.w /= size.y;
-	model.program->uniform("texBounds")->set(frame);
-    model.draw();
+	scene->personModel.program->uniform("texBounds")->set(frame);
+	scene->personModel.draw();
 }
 
 void Character::update(float deltaTime)

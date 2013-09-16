@@ -68,7 +68,6 @@ float Person::getClosestMenace(vec2f pos, vec2f& menacePos)
 	menacePos += panicSource;
 
 	/*
-
 	//TODO FIX THIS SHIT
 	for(int i = 0; i < (int)scene->players.size(); i++)
 	{
