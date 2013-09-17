@@ -175,7 +175,7 @@ vec2f Person::moveCharacter(float delta) {
 				hasGoal = false;
 			}
 
-			mark = MARK_EXCLAMATION;
+			mark = MARK_BLUE_EXCLAMATION;
 
 			for(int i = 0; i < (int)scene->players.size(); i++)
 			{

@@ -200,7 +200,7 @@ vec2f Police::moveCharacter(float delta)
 		case STATE_ALERT:
 		{
 			vel = 4.5f;
-			mark = MARK_QUESTION;
+			mark = MARK_RED_QUESTION;
 			alertTime -= delta;
 
 			if (!hasGoal)
@@ -214,7 +214,7 @@ vec2f Police::moveCharacter(float delta)
 		case STATE_CONFUSE:
 		{
 			vel = 2.0f;
-			mark = MARK_QUESTION;
+			mark = MARK_RED_QUESTION;
 			alertTime -= delta;
 
 			if (!hasGoal)
@@ -261,7 +261,7 @@ vec2f Police::moveCharacter(float delta)
 		case STATE_PLAYER_LOST:
 		{
 			vel = 2.75f;
-			mark = MARK_QUESTION;
+			mark = MARK_RED_QUESTION;
 			lastPosSawTime[chasingPlayerNum] -= delta;
 
 			Player* p = scene->players[chasingPlayerNum];

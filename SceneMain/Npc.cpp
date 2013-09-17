@@ -1,11 +1,46 @@
 #include "Npc.hpp"
 
 #include "SceneMain.hpp"
+#include "../graphics/TextureManager.hpp"
+#include "../graphics/ShaderProgram.hpp"
 
 Npc::Npc(SceneMain* scene) : Character(scene)
 {
     this->hasGoal = false;
     this->mark = MARK_NONE;
+}
+
+void Npc::draw() const
+{
+	Character::draw();
+
+	if(mark == MARK_NONE)
+		return;
+
+	mat4f m(1.0);
+	m = glm::translate(m, pos);
+	//m = glm::rotate(m,GLOBALCLOCK.getElapsedTime().asSeconds()*50,vec3f(0,0,1));
+	//m = glm::scale(m,scale);
+	mat4f transform = scene->getState().projection*scene->getState().view*m;
+	mat4f transform2 = transform;
+
+	scene->personModel.program->uniform("tex")->set(2);
+
+	transform2 = glm::rotate(transform2, -15.0f, vec3f(1, 0, 0));
+	transform2 = glm::scale(transform2, vec3f(0.4f));
+	transform2 = glm::translate(transform2, vec3f(0, 2, 0.3));
+	scene->personModel.program->uniform("modelViewProjectionMatrix")->set(transform2);
+
+	TextureManager::useTexture("exc", GL_TEXTURE2);
+	float x = 0;
+	float y = 0;
+	if(mark == MARK_BLUE_EXCLAMATION || mark == MARK_BLUE_QUESTION)
+		x = 0.5;
+	if(mark == MARK_BLUE_EXCLAMATION || mark == MARK_RED_EXCLAMATION)
+		y = 0.5;
+	scene->personModel.program->uniform("texBounds")->set(vec4f(x, y, 0.5, 0.5));
+	scene->personModel.draw();
+
 }
 
 void Npc::setGoal(vec2f goal) {

@@ -36,7 +36,7 @@ SceneMain::SceneMain(Game &parent) :
 
 	for(int i = 0; i < 340; i++)
 		addObject(new Person(this));
-	for(int i = 0; i < 25; i++)
+	for(int i = 0; i < 18; i++)
 		addObject(new Police(this));
 
 	int size = map->getWidth()*map->getHeight();
@@ -71,6 +71,8 @@ bool SceneMain::loadResources() {
 		return false;
 	shaderSingleColor = s4;
 
+	if(!TextureManager::loadTexture("exc","data/img/exc.png"))
+		return false;
 	if(!TextureManager::loadTexture("person","data/img/person_sheet.png"))
 		return false;
 	if(!TextureManager::loadTexture("player","data/img/player_sheet.png"))
@@ -176,6 +178,13 @@ bool comp(GameObject* a, GameObject* b)
 }
 
 void SceneMain::update(float deltaTime) {
+
+	bool allDead = true;
+	for(int i = 0; i < players.size(); i++)
+		allDead &= players[i]->jailed;
+
+	if(allDead && sf::Keyboard::isKeyPressed(sf::Keyboard::Return))
+		parent.setScene(new SceneMain(parent));
 
 	++fpsCount;
 	debugCounter += deltaTime;

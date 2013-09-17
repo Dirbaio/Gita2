@@ -9,13 +9,14 @@ public:
 
     enum CharacterMark {
         MARK_NONE,
-        MARK_EXCLAMATION,
-        MARK_RED_EXCLAMATION,
-        MARK_BLUE_QUESTION,
-        MARK_QUESTION
+		MARK_RED_EXCLAMATION,
+		MARK_BLUE_EXCLAMATION,
+		MARK_RED_QUESTION,
+		MARK_BLUE_QUESTION
     };
 
     Npc(SceneMain* scene);
+	void draw() const;
 
 protected:
     CharacterMark mark;

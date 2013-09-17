@@ -71,6 +71,7 @@ void Character::draw() const
 	scene->personModel.program->uniform("texBounds")->set(frame);
 	scene->personModel.draw();
 
+
 }
 
 void Character::update(float deltaTime)
