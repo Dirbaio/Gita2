@@ -2,7 +2,7 @@
 #include "SceneMain.hpp"
 #include "../Game.hpp"
 
-House::House(SceneMain* parentScene, int x, int y, int type) : GameObject(parentScene) {
+House::House(SceneMain* parentScene, int x, int y,  int width, int depth) : GameObject(parentScene,vec3f(0),vec3f(float(width)/4.0f,1,float(depth)/4.0f)) {
 	pos = vec3f(x, 0, y);
 	tri.mesh = new Mesh("data/models/house.obj");
 	tri.program = parentScene->shaderHouse;

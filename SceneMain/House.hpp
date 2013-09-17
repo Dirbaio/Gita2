@@ -5,7 +5,7 @@
 
 class House : public GameObject {
 	public:
-		House(SceneMain* parentScene, int x, int y, int type);
+		House(SceneMain* parentScene, int x, int y, int width, int depth);
 		virtual ~House();
 
 		void update(float deltaTime);

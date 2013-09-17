@@ -272,17 +272,20 @@ Map::Map(SceneMain* scene) : GameObject(scene)
 
 const static int houseSizes[][2] =
 {
-//	{10, 10},
+	{8, 8},
 	{4, 4},
+	{5, 3},
+	{2, 6},
+	{6, 2}
 };
-const static int typeCount = 1;
+const static int typeCount = 5;
 
 void Map::placeHouses2()
 {
 	for(int y = 0; y < getHeight(); y++)
 		for(int x = 0; x < getWidth(); x++)
 			for(int i = 0; i < typeCount; i++)
-				if(Utils::randomBool(70))
+				if(Utils::randomBool(30))
 					if(houseFitsAt(x, y, i))
 						placeHouse(x, y, i);
 }
@@ -292,11 +295,15 @@ void Map::placeHouses()
 
 	for(int i = 0; i < typeCount; i++)
 	{
+		int max = 10000/houseSizes[i][0];
 		int fails = 0;
-		while(fails < 10) //Parar cuando hayan 10 fallos seguidos.
+		int placed = 0;
+		while((fails < 100) && placed < max) //Parar cuando hayan 10 fallos seguidos.
 		{
-			if(placeHouse(i))
+			if(placeHouse(i)) {
 				fails = 0;
+				++placed;
+			}
 			else
 				fails++;
 		}
@@ -344,7 +351,7 @@ void Map::placeHouse(int x, int y, int type)
 		for(int yy = 0; yy < ty; yy++)
 			tile(x+xx, y+yy).type = Building;
 
-	scene->addObject(new House(scene, x, y, type));
+	scene->addObject(new House(scene, x, y, tx, ty));
 }
 
 Map::~Map()
