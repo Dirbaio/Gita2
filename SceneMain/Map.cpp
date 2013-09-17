@@ -3,6 +3,7 @@
 #include "Game.hpp"
 #include <cmath>
 #include "House.hpp"
+#include <queue>
 
 using namespace std;
 
@@ -55,8 +56,10 @@ struct Apple {
 
 Map::Map(SceneMain* scene) : GameObject(scene)
 {
-	int sizex = 100;
-	int sizey = 70;
+	prio = -1;
+
+	int sizex = 80;
+	int sizey = 60;
 	tiles = vector<vector<Tile> > (sizex, vector<Tile>(sizey));
 
 	vector<Street> sx = generateStreets(sizey);
@@ -172,6 +175,60 @@ Map::Map(SceneMain* scene) : GameObject(scene)
 				tile(s.pos+y, x).type = Map::Sidewalk;
 	}*/
 
+	//Discard smaller connected components
+
+	vector<vector<int> > vis(getWidth(), vector<int>(getHeight(), -1));
+	int bestid = 0;
+	int bestcount = 0;
+
+	int dx[] = {0, 0, 1, -1};
+	int dy[] = {1, -1, 0, 0};
+
+	for(int x = 0; x < getWidth(); x++)
+		for(int y = 0; y < getHeight(); y++)
+		{
+			if(vis[x][y] == -1 && !tile(x, y).isSolid())
+			{
+				int id = x+y*getWidth();
+				int count = 0;
+				queue<pair<int, int> > q;
+				q.push(pair<int, int> (x, y));
+
+				while(!q.empty())
+				{
+					int xx = q.front().first;
+					int yy = q.front().second;
+					count++;
+					q.pop();
+					vis[xx][yy] = id;
+
+					for(int i = 0; i < 4; i++)
+					{
+						int x2 = xx+dx[i];
+						int y2 = yy+dy[i];
+						if(!tile(x2, y2).isSolid() && vis[x2][y2] == -1)
+						{
+							vis[x2][y2] = id;
+							q.push(pair<int, int> (x2, y2));
+						}
+					}
+				}
+
+				if(count > bestcount)
+				{
+					bestcount = count;
+					bestid = id;
+				}
+			}
+		}
+
+	for(int x = 0; x < getWidth(); x++)
+		for(int y = 0; y < getHeight(); y++)
+		{
+			if(vis[x][y] != bestid && !tile(x, y).isSolid())
+				tile(x, y).type = Building;
+		}
+
 	//Generate the mesh
 	vector<Vertex::Element> elements;
 	elements.push_back(Vertex::Element(Vertex::Attribute::Position , Vertex::Element::Float, 3));
@@ -188,6 +245,9 @@ Map::Map(SceneMain* scene) : GameObject(scene)
 	for(int y = 0; y < sizey; y++)
 		for(int x = 0; x < sizex; x++)
 		{
+			if(tiles[x][y].type == Map::Building)
+				continue;
+
 			vec3f color = vec3f(0.3, 0.5, 0.1);
 			if((x+y)%2 == 0)
 				color = vec3f(0.2, 0.4, 0.1);

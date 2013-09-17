@@ -16,6 +16,7 @@ class GameObject { //Static objects that have a position and rotation but don't 
 		bool isAlive;
 		vec3f pos;
 		vec3f scale;
+		int prio;
 	protected:
         SceneMain* scene;
 };

@@ -38,10 +38,12 @@ class SceneMain : public Scene {
 	void addObject(GameObject* object);
 
 	ShaderProgram* shaderTexture;
+	ShaderProgram* shaderSingleColor;
 	ShaderProgram* shaderColor;
 	ShaderProgram* shaderHouse;
 	Model personModel;
 	Model shadowModel;
+	Model bloodModel;
 
 	Map* map;
 	std::vector<Player*> players;

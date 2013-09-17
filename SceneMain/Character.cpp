@@ -12,8 +12,10 @@ Character::Character(SceneMain* sc) : GameObject(sc)
     position = vec2f(3, 3);
 	faceDir = FACE_DOWN;
 
+	deadrot = Utils::randomFloat(0, 360);
 	texName = "person";
 	action = "Idle";
+	drawDead = false;
 }
 
 void Character::ensureAnim(std::string name)
@@ -29,13 +31,37 @@ void Character::draw() const
 	m = glm::translate(m, pos);
     //m = glm::rotate(m,GLOBALCLOCK.getElapsedTime().asSeconds()*50,vec3f(0,0,1));
     //m = glm::scale(m,scale);
+	mat4f transform = scene->getState().projection*scene->getState().view*m;
 
-	TextureManager::
+
+	if(drawDead)
+	{
+		scene->bloodModel.program->uniform("modelViewProjectionMatrix")->set(transform);
+		scene->bloodModel.program->uniform("color")->set(vec4f(0.9, 0.1, 0.2, 0.7));
+		scene->bloodModel.draw();
+	}
+
+	scene->shadowModel.program->uniform("modelViewProjectionMatrix")->set(transform);
+	scene->shadowModel.program->uniform("color")->set(vec4f(0.0, 0.0, 0.0, 0.3));
+	scene->shadowModel.draw();
+
+	if(drawDead)
+	{
+		transform = glm::translate(transform, vec3f(0, 0.03, 0));
+		transform = glm::rotate(transform, deadrot, vec3f(0, 1, 0));
+		transform = glm::rotate(transform, 90.0f, vec3f(0, 0, 1));
+		transform = glm::rotate(transform, 90.0f, vec3f(0, 1, 0));
+		transform = glm::translate(transform, vec3f(0, -0.3, 0));
+	}
+	else
+	{
+		transform = glm::rotate(transform, -26.0f, vec3f(1, 0, 0));
+	}
+	scene->personModel.program->uniform("modelViewProjectionMatrix")->set(transform);
+
 	TextureManager::useTexture(texName, GL_TEXTURE2);
 	scene->personModel.program->uniform("tex")->set(2);
 
-    mat4f transform = scene->getState().projection*scene->getState().view*m;
-	scene->personModel.program->uniform("modelViewProjectionMatrix")->set(transform);
 	vec4f frame = vec4f(anim.getCurrentFrame());
 	vec2i size = TextureManager::getTextureSize(texName);
 	frame.x /= size.x;
@@ -44,6 +70,7 @@ void Character::draw() const
 	frame.w /= size.y;
 	scene->personModel.program->uniform("texBounds")->set(frame);
 	scene->personModel.draw();
+
 }
 
 void Character::update(float deltaTime)

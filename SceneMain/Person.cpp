@@ -274,7 +274,7 @@ void Person::doDeath() {
 
 	deathTimer = dissappearTime;
 	state = STATE_DEAD;
-
+	drawDead = true;
 }
 
 void Person::onHit() {

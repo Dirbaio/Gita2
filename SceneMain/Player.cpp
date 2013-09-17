@@ -20,6 +20,8 @@ Player::Player(SceneMain* sc) : Character(sc)
 	anim.setAnimData(data);
 
 	texName = "player";
+
+	position = vec2f(sc->map->getRandomStreet())+0.5f;
 }
 
 void Player::hitAction()
@@ -27,8 +29,10 @@ void Player::hitAction()
     actionDelay = 0.18f;
 }
 
-vec2f Player::moveCharacter(float delta) {
+vec2f Player::moveCharacter(float delta)
+{
 
+	drawDead = jailed;
     if(jailed)
     {
         jailedTime += delta;

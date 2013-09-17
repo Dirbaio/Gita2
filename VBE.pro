@@ -73,5 +73,7 @@ HEADERS += \
 OTHER_FILES += \
     data/shaders/*.vert \
     data/shaders/*.frag \
-    data/anim/*.anim
+    data/anim/*.anim \
+    data/shaders/singlecolor.vert \
+    data/shaders/singlecolor.frag
 

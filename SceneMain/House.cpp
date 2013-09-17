@@ -6,6 +6,8 @@ House::House(SceneMain* parentScene, int x, int y, int type) : GameObject(parent
 	pos = vec3f(x, 0, y);
 	tri.mesh = new Mesh("data/models/house.obj");
 	tri.program = parentScene->shaderHouse;
+
+	prio = 2;
 }
 
 House::~House() {

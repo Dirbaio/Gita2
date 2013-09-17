@@ -20,6 +20,11 @@ namespace Utils
 		return (mersenne() & 0x7FFFFFFF);
 	}
 
+	inline void seedRandom(int seed)
+	{
+		mersenne.seed(seed);
+	}
+
 	//Returns random float in [min, max)
 	inline float randomFloat(float min, float max)
 	{

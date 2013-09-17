@@ -49,7 +49,8 @@ class Character : public GameObject
 	vec2f position;
 
 	float vel;
-
+	float deadrot;
+	bool drawDead;
 	void moveInDir(vec2f dir, float deltaTime);
 };
 

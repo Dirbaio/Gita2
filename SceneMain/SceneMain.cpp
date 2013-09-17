@@ -8,15 +8,20 @@
 #include "Person.hpp"
 #include <cassert>
 #include "Police.hpp"
-
+#include <algorithm>
+#include <cstdlib>
 SceneMain::SceneMain(Game &parent) :
 	Scene(parent),
 	debugCounter(0.0), fpsCount(0)
 {
+	Utils::seedRandom(time(0));
 	std::cout << "* Loading new scene: Main" << std::endl;
 	assert(loadResources());
 	//Center mouse
 	//sf::Mouse::setPosition(sf::Vector2i(SCRWIDTH/2,SCRHEIGHT/2),parent.getWindow());
+
+	addObject(map = new Map(this));
+
 
 	int playerCount = 1;
 	players.resize(playerCount);
@@ -28,12 +33,11 @@ SceneMain::SceneMain(Game &parent) :
 
 	playerNum = 0;
 
-	addObject(map = new Map(this));
 
-	for(int i = 0; i < 100; i++)
+	for(int i = 0; i < 340; i++)
 		addObject(new Person(this));
-	//for(int i = 0; i < 50; i++)
-	//	addObject(new Police(this));
+	for(int i = 0; i < 25; i++)
+		addObject(new Police(this));
 
 	int size = map->getWidth()*map->getHeight();
 	estructuraPepinoPeople = new std::vector<Person*> [size];
@@ -62,6 +66,11 @@ bool SceneMain::loadResources() {
 		return false;
 	shaderHouse = s3;
 
+	ShaderProgram* s4 = new ShaderProgram();
+	if(!s4->makeProgram("data/shaders/singlecolor.vert","data/shaders/singlecolor.frag"))
+		return false;
+	shaderSingleColor = s4;
+
 	if(!TextureManager::loadTexture("person","data/img/person_sheet.png"))
 		return false;
 	if(!TextureManager::loadTexture("player","data/img/player_sheet.png"))
@@ -70,36 +79,101 @@ bool SceneMain::loadResources() {
 		return false;
 
 	//Person model
-	std::vector<Vertex::Element> elements;
-	elements.push_back(Vertex::Element(Vertex::Attribute::Position , Vertex::Element::Float, 3));
-	elements.push_back(Vertex::Element(Vertex::Attribute::TexCoord , Vertex::Element::Float, 2));
+	{
+		std::vector<Vertex::Element> elements;
+		elements.push_back(Vertex::Element(Vertex::Attribute::Position , Vertex::Element::Float, 3));
+		elements.push_back(Vertex::Element(Vertex::Attribute::TexCoord , Vertex::Element::Float, 2));
 
-	Vertex::Format format(elements);
-	Mesh* mesh = new Mesh(format,0,false);
+		Vertex::Format format(elements);
+		Mesh* mesh = new Mesh(format,0,false);
 
-	struct Vertex {
-			Vertex(vec3f pos, vec2f tex) : pos(pos) , tex(tex) {}
-			vec3f pos;
-			vec2f tex;
-	};
+		struct Vertex {
+				Vertex(vec3f pos, vec2f tex) : pos(pos) , tex(tex) {}
+				vec3f pos;
+				vec2f tex;
+		};
 
-	std::vector<Vertex> data;
-	data.push_back(Vertex(vec3f(-0.5, 0.0, 0), vec2f(0.0, 1.0)));
-	data.push_back(Vertex(vec3f( 0.5, 0.0, 0), vec2f(1.0, 1.0)));
-	data.push_back(Vertex(vec3f(-0.5, 1.0, -0.5), vec2f(0.0, 0.0)));
-	data.push_back(Vertex(vec3f( 0.5, 0.0, 0), vec2f(1.0, 1.0)));
-	data.push_back(Vertex(vec3f( 0.5, 1.0, -0.5), vec2f(1.0, 0.0)));
-	data.push_back(Vertex(vec3f(-0.5, 1.0, -0.5), vec2f(0.0, 0.0)));
+		std::vector<Vertex> data;
+		data.push_back(Vertex(vec3f(-0.5, 0.0, 0), vec2f(0.0, 1.0)));
+		data.push_back(Vertex(vec3f( 0.5, 0.0, 0), vec2f(1.0, 1.0)));
+		data.push_back(Vertex(vec3f(-0.5, 1.0, 0), vec2f(0.0, 0.0)));
+		data.push_back(Vertex(vec3f( 0.5, 0.0, 0), vec2f(1.0, 1.0)));
+		data.push_back(Vertex(vec3f( 0.5, 1.0, 0), vec2f(1.0, 0.0)));
+		data.push_back(Vertex(vec3f(-0.5, 1.0, 0), vec2f(0.0, 0.0)));
 
-	mesh->setVertexData(&data[0],data.size());
-	personModel.mesh = mesh;
-	personModel.program = shaderTexture;
+		mesh->setVertexData(&data[0],data.size());
+		personModel.mesh = mesh;
+		personModel.program = shaderTexture;
+	}
 
-	glAlphaFunc(GL_GREATER, 0.5f);
-	glEnable(GL_ALPHA_TEST);
+	float sides = 20;
+
+	//Shadow model
+	{
+		std::vector<Vertex::Element> elements;
+		elements.push_back(Vertex::Element(Vertex::Attribute::Position , Vertex::Element::Float, 3));
+
+		Vertex::Format format(elements);
+		Mesh* mesh = new Mesh(format,0,false);
+
+		struct Vertex {
+				Vertex(vec3f pos) : pos(pos) {}
+				vec3f pos;
+		};
+
+		float rad = 0.2;
+		float angle = 0;
+		float angleStep = 2.0 * M_PI * 1.0f / sides;
+		std::vector<Vertex> data;
+		for (unsigned int i = 0; i < sides; ++i) {
+			data.push_back(Vertex(vec3f(0.0, 0.02, 0.0)));
+			data.push_back(Vertex(vec3f(rad*std::cos(angle), 0.02, rad*std::sin(angle)))); angle -= angleStep;
+			data.push_back(Vertex(vec3f(rad*std::cos(angle), 0.02, rad*std::sin(angle))));
+		}
+
+		mesh->setVertexData(&data[0],data.size());
+		shadowModel.mesh = mesh;
+		shadowModel.program = shaderSingleColor;
+	}
+
+	//Blood model
+	{
+		std::vector<Vertex::Element> elements;
+		elements.push_back(Vertex::Element(Vertex::Attribute::Position , Vertex::Element::Float, 3));
+
+		Vertex::Format format(elements);
+		Mesh* mesh = new Mesh(format,0,false);
+
+		struct Vertex {
+				Vertex(vec3f pos) : pos(pos) {}
+				vec3f pos;
+		};
+
+		float rad = 0.7;
+		float angle = 0;
+		float angleStep = 2.0 * M_PI * 1.0f / sides;
+		std::vector<Vertex> data;
+		float m = Utils::randomFloat(0.7, 1.0);
+		for (unsigned int i = 0; i < sides; ++i) {
+			data.push_back(Vertex(vec3f(0.0, 0.01, 0.0)));
+			data.push_back(Vertex(vec3f(rad*std::cos(angle)*m, 0.01, rad*std::sin(angle)*m)));
+			angle -= angleStep;
+			m = Utils::randomFloat(0.7, 1.0);
+			data.push_back(Vertex(vec3f(rad*std::cos(angle)*m, 0.01, rad*std::sin(angle)*m)));
+		}
+
+		mesh->setVertexData(&data[0],data.size());
+		bloodModel.mesh = mesh;
+		bloodModel.program = shaderSingleColor;
+	}
+
 	return true;
 }
 
+bool comp(GameObject* a, GameObject* b)
+{
+	return a->prio < b->prio;
+}
 
 void SceneMain::update(float deltaTime) {
 
@@ -137,6 +211,7 @@ void SceneMain::update(float deltaTime) {
 		}
 	}
 
+	objects.sort(comp);
 
 	for(std::list<GameObject*>::iterator it = objects.begin();it != objects.end(); ++it) {
 		(*it)->update(deltaTime);
@@ -169,7 +244,7 @@ void SceneMain::onKeyPressed(float deltaTime, sf::Keyboard::Key key) {
 
 	switch(key) {
 		case sf::Keyboard::Escape:
-//			parent.close();
+			//			parent.close();
 			break;
 		default:
 			break;
