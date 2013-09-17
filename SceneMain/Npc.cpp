@@ -11,7 +11,7 @@ Npc::Npc(SceneMain* scene) : Character(scene)
 void Npc::setGoal(vec2f goal) {
     this->goal = goal;
 
-    vec2i from = vec2i(position);
+	vec2i from = vec2i(position);
     vec2i to = vec2i(goal);
 
     if(scene->map->solid(from.x, from.y)) {

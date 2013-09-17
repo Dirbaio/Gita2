@@ -29,12 +29,11 @@ SceneMain::SceneMain(Game &parent) :
 	playerNum = 0;
 
 	addObject(map = new Map(this));
-//	addObject(new House(this,this->shaderHouse,vec3f(9,0,9),vec3f(2.5)));
 
-	for(int i = 0; i < 70; i++)
+	for(int i = 0; i < 100; i++)
 		addObject(new Person(this));
-	for(int i = 0; i < 50; i++)
-		addObject(new Police(this));
+	//for(int i = 0; i < 50; i++)
+	//	addObject(new Police(this));
 
 	int size = map->getWidth()*map->getHeight();
 	estructuraPepinoPeople = new std::vector<Person*> [size];
@@ -138,9 +137,13 @@ void SceneMain::update(float deltaTime) {
 		}
 	}
 
+
 	for(std::list<GameObject*>::iterator it = objects.begin();it != objects.end(); ++it) {
 		(*it)->update(deltaTime);
 	}
+
+	doCollisions();
+
 	//Erase dead game objects
 	for(std::list<GameObject*>::iterator it = objects.begin(); it != objects.end();)
 		if (!(*it)->isAlive) {
@@ -354,4 +357,72 @@ std::vector<Police*> SceneMain::getPolices()
 	}
 
 	return res;
+}
+
+//FEO, MUY FEO
+
+void collide(Character* a, Character* b)
+{
+	vec2f pa = a->getPosition();
+	vec2f pb = b->getPosition();
+
+	vec2f dir = pb-pa;
+
+	float dist = 0.5;
+	float len = glm::length(dir);
+	if(len < dist && len > 0.01)
+	{
+		dir *= 1/len;
+		dir *= dist*0.5;
+		vec2f mean = (pa+pb)*0.5f;
+		a->move(mean-dir);
+		b->move(mean+dir);
+	}
+}
+
+template<class A, class B>
+void doCollisions2(vector<A*>& a, vector<B*> b)
+{
+	for(int i = 0; i < a.size(); i++)
+		for(int j = 0; j < b.size(); j++)
+			collide((Character*)a[i], (Character*)b[j]);
+}
+
+template<class A>
+void doCollisions1(vector<A*>& a)
+{
+	for(int i = 0; i < a.size(); i++)
+		for(int j = i+1; j < a.size(); j++)
+			collide((Character*)a[i], (Character*)a[j]);
+}
+
+
+void SceneMain::doCollisions()
+{
+	int tx = map->getWidth();
+	int ty = map->getHeight();
+	int t = tx*ty;
+
+	int add[4] = {1, tx-1, tx, tx+1};
+
+	doCollisions1<Player>(players);
+
+	for(int i = 0; i < t; i++)
+	{
+		doCollisions1<Police> (estructuraPepinoPolice[i]);
+		doCollisions1<Person> (estructuraPepinoPeople[i]);
+		doCollisions2<Police, Player>(estructuraPepinoPolice[i], players);
+		doCollisions2<Person, Player>(estructuraPepinoPeople[i], players);
+
+		for(int j = 0; j < 4; j++)
+		{
+			int i2 = i+add[j];
+			if(i2 >= t) break;
+
+			doCollisions2<Police, Police>(estructuraPepinoPolice[i], estructuraPepinoPolice[i2]);
+			doCollisions2<Police, Person>(estructuraPepinoPolice[i], estructuraPepinoPeople[i2]);
+			doCollisions2<Person, Police>(estructuraPepinoPeople[i], estructuraPepinoPolice[i2]);
+			doCollisions2<Person, Person>(estructuraPepinoPeople[i], estructuraPepinoPeople[i2]);
+		}
+	}
 }

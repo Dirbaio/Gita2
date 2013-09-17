@@ -55,6 +55,7 @@ class SceneMain : public Scene {
 	std::vector<Person*>* estructuraPepinoPeople;
 	std::vector<Police*>* estructuraPepinoPolice;
 
+	void doCollisions();
 	bool loadResources();
 
 	int playerNum;
