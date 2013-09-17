@@ -2,6 +2,7 @@
 #include "SceneMain.hpp"
 #include "Game.hpp"
 #include <cmath>
+#include "House.hpp"
 
 using namespace std;
 
@@ -54,8 +55,8 @@ struct Apple {
 
 Map::Map(SceneMain* scene) : GameObject(scene)
 {
-	int sizex = 180;
-	int sizey = 120;
+	int sizex = 100;
+	int sizey = 70;
 	tiles = vector<vector<Tile> > (sizex, vector<Tile>(sizey));
 
 	vector<Street> sx = generateStreets(sizey);
@@ -137,6 +138,22 @@ Map::Map(SceneMain* scene) : GameObject(scene)
 						tile(xx, yy).type = Map::Roadway;
 			}
 		}
+
+	//Put a water border around the map.
+	for(int x = 0; x < getWidth(); x++)
+	{
+		tile(x, 0).type = Water;
+		tile(x, getHeight()-1).type = Water;
+	}
+	for(int y = 0; y < getHeight(); y++)
+	{
+		tile(0, y).type = Water;
+		tile(getWidth()-1, y).type = Water;
+	}
+
+	placeHouses();
+	placeHouses2();
+
 	/*
 	for(int i = 0; i < sx.size(); i++)
 	{
@@ -191,6 +208,83 @@ Map::Map(SceneMain* scene) : GameObject(scene)
 	mesh->setVertexData(&data[0],data.size());
 	model.mesh = mesh;
 	model.program = scene->shaderColor;
+}
+
+const static int houseSizes[][2] =
+{
+//	{10, 10},
+	{4, 4},
+};
+const static int typeCount = 1;
+
+void Map::placeHouses2()
+{
+	for(int y = 0; y < getHeight(); y++)
+		for(int x = 0; x < getWidth(); x++)
+			for(int i = 0; i < typeCount; i++)
+				if(Utils::randomBool(70))
+					if(houseFitsAt(x, y, i))
+						placeHouse(x, y, i);
+}
+
+void Map::placeHouses()
+{
+
+	for(int i = 0; i < typeCount; i++)
+	{
+		int fails = 0;
+		while(fails < 10) //Parar cuando hayan 10 fallos seguidos.
+		{
+			if(placeHouse(i))
+				fails = 0;
+			else
+				fails++;
+		}
+	}
+}
+
+bool Map::placeHouse(int type)
+{
+	int tx = houseSizes[type][0];
+	int ty = houseSizes[type][1];
+
+	int x = Utils::randomInt(0, getWidth()-tx);
+	int y = Utils::randomInt(0, getHeight()-ty);
+
+	bool fit = houseFitsAt(x, y, type);
+
+	if(fit)
+		placeHouse(x, y, type);
+
+	return fit;
+}
+
+bool Map::houseFitsAt(int x, int y, int type)
+{
+	int tx = houseSizes[type][0];
+	int ty = houseSizes[type][1];
+
+	if(x+tx > getWidth()) return false;
+	if(y+ty > getHeight()) return false;
+
+	for(int xx = 0; xx < tx; xx++)
+		for(int yy = 0; yy < ty; yy++)
+			if(tile(x+xx, y+yy).type != Garden)
+				return false;
+
+	return true;
+}
+
+void Map::placeHouse(int x, int y, int type)
+{
+	int tx = houseSizes[type][0];
+	int ty = houseSizes[type][1];
+
+	for(int xx = 0; xx < tx; xx++)
+		for(int yy = 0; yy < ty; yy++)
+			tile(x+xx, y+yy).type = Building;
+
+	scene->addObject(new House(scene, x, y, type));
 }
 
 Map::~Map()

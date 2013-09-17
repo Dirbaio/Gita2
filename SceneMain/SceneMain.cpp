@@ -29,9 +29,9 @@ SceneMain::SceneMain(Game &parent) :
 	playerNum = 0;
 
 	addObject(map = new Map(this));
-	addObject(new House(this,this->shaderHouse,vec3f(9,0,9),vec3f(2.5)));
+//	addObject(new House(this,this->shaderHouse,vec3f(9,0,9),vec3f(2.5)));
 
-	for(int i = 0; i < 700; i++)
+	for(int i = 0; i < 70; i++)
 		addObject(new Person(this));
 	for(int i = 0; i < 50; i++)
 		addObject(new Police(this));

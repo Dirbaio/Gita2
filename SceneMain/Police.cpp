@@ -345,7 +345,7 @@ void Police::lookAtRandomPlace()
 	while(i < 4) {
 		faceDir = (FaceDir)Utils::randomInt(FACE_UP, FACE_RIGHT);
 		vec2i v2 = v + dirInc[faceDir];
-		if(!scene->map->tile(v2.x, v2.y).isSolid()) break;
+		if(scene->map->validTile(v2) && !scene->map->tile(v2).isSolid()) break;
 		i++;
 	}
 }

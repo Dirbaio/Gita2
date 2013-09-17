@@ -5,7 +5,7 @@
 
 class House : public GameObject {
 	public:
-		House(SceneMain* parentScene, ShaderProgram* program, vec3f pos, vec3f scale);
+		House(SceneMain* parentScene, int x, int y, int type);
 		virtual ~House();
 
 		void update(float deltaTime);

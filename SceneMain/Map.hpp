@@ -11,15 +11,16 @@ class Map : public GameObject
 			Sidewalk,
 			Crosswalk,
 			Garden,
-			House,
+			Building,
 			Fence,
-			Grass
+			Grass,
+			Water
 		};
 
 		struct Tile {
 				TileType type;
 				bool isSolid() const {
-					return (type == House || type == Fence || type == Garden);
+					return (type == Building || type == Fence || type == Water);
 				}
 				bool isGrass() const {
 					return (type == Grass);
@@ -39,8 +40,13 @@ class Map : public GameObject
 		Tile& tile(int x, int y);
 		Tile tile(vec2f p) const { return tile(int(p.x), int(p.y)); }
 		Tile& tile(vec2f p) { return tile(int(p.x), int(p.y)); }
+		Tile tile(vec2i p) const { return tile(int(p.x), int(p.y)); }
+		Tile& tile(vec2i p) { return tile(int(p.x), int(p.y)); }
 		inline bool validTile(int x, int y) const {
 			return x >= 0 && x < getWidth() && y >= 0 && y < getHeight();
+		}
+		inline bool validTile(vec2i p) const {
+			return validTile(p.x, p.y);
 		}
 
         bool solid(int x, int y) const {return tile(x, y).isSolid(); }
@@ -49,6 +55,11 @@ class Map : public GameObject
 
 		vec2i getRandomStreet() const;
 	private:
+		void placeHouses();
+		void placeHouses2();
+		bool placeHouse(int type);
+		void placeHouse(int x, int y, int type);
+		bool houseFitsAt(int x, int y, int type);
 		std::vector<std::vector<Tile> > tiles;
 		Model model;
 };
